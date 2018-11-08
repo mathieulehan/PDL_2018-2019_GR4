@@ -1,3 +1,4 @@
+package classes;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -6,11 +7,13 @@ import java.net.URL;
 public class ExtractWikitable {
 
 	public static void extractWikiTable(String langue, String action, String titre) throws IOException {
+		String html ="";
 		if(action.equals("render")) {
 			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			String html = getContent(page);
+				html = getContent(page);
+			
 			ParseHTML parserHTML = new ParseHTML(html);
-			parserHTML.htmlToCSV(html);
+			parserHTML.htmlToCSV(html,"C:\\Users\\mathi\\Documents\\html.csv");
 		}
 		else if(action.equals("parse")) {
 			URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");

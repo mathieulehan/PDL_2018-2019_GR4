@@ -1,3 +1,4 @@
+package classes;
 import java.io.FileWriter;
 import java.io.IOException;
 import org.jsoup.Jsoup;
@@ -21,14 +22,13 @@ public class ParseHTML {
 		this.html = html;
 	}
 	/**
-	 * Méthode qui parcoure les tables du HTMl et les convertit en CSV
+	 * Méthode qui parcoure les tables du HTML et les convertit en CSV
 	 * @param html
+	 * @throws IOException 
 	 */
-	public void htmlToCSV(String html) {
-
+	public void htmlToCSV(String html, String path) {
 		try {
-			FileWriter writer = new FileWriter("C:\\Users\\mathi\\Documents\\html.csv");
-			
+			FileWriter writer = new FileWriter(path);
 			Document page = Jsoup.parseBodyFragment(html);
 			Elements lignes = page.getElementsByTag("tr");
 			
