@@ -12,6 +12,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import exceptions.LangueException;
+
 /**
  * Classe permettant de convertir des tables html en CSV
  * @author mathi
@@ -28,10 +30,13 @@ public class Donnee_Html extends Donnee{
 		this.html = html;
 	}
 	
-	public void extraire(String langue, String titre) throws IOException {
-		String html ="";
+	public void extraire(String langue, String titre) throws IOException, LangueException {
+		if (langue != "fr" || langue != "en" ) {
+			throw new LangueException("Exception : Langue invalide");
+		}
+		
 		URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-		html = recupContenu(page);
+		String html = "" + recupContenu(page);
 		
 		Donnee_Html donneeHTML = new Donnee_Html(html);
 		donneeHTML.htmlToCSV(html, FileSystems.getDefault().getPath(".") + "html.csv");
