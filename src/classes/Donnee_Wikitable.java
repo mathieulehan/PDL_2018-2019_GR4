@@ -24,7 +24,7 @@ public class Donnee_Wikitable extends Donnee{
 		parserWikitext.wikitableVersCSV(wikitable);
 	}
 
-	public static String recupContenu(URL url) throws IOException {
+	public String recupContenu(URL url) throws IOException {
 		StringBuilder result = new StringBuilder();
 		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 

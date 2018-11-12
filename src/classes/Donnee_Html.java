@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.FileSystems;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,13 +31,13 @@ public class Donnee_Html extends Donnee{
 	public void extraire(String langue, String titre) throws IOException {
 		String html ="";
 		URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			html = recupContenu(page);
+		html = recupContenu(page);
 		
 		Donnee_Html donneeHTML = new Donnee_Html(html);
-		donneeHTML.htmlToCSV(html,"C:\\Users\\mathi\\Documents\\html.csv");
+		donneeHTML.htmlToCSV(html, FileSystems.getDefault().getPath(".") + "html.csv");
 	}
 	
-	public static String recupContenu(URL url) throws IOException {
+	public String recupContenu(URL url) throws IOException {
 		StringBuilder result = new StringBuilder();
 		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 
