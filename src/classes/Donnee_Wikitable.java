@@ -100,4 +100,13 @@ public class Donnee_Wikitable extends Donnee{
 			e.getStackTrace();
 		}
 	}
+
+	@Override
+	boolean pageComporteTableau(String wikitable) {
+		// TODO Auto-generated method stub
+		if(wikitable.contains("|-")){
+			return true;
+		}
+		return false;
+	}
 }

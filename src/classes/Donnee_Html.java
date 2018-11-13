@@ -81,4 +81,14 @@ public class Donnee_Html extends Donnee{
 		}
 		
 	}
+
+	@Override
+	boolean pageComporteTableau(String html) {
+		// TODO Auto-generated method stub
+		Document page = Jsoup.parseBodyFragment(html);
+		if(page.getElementsByTag("table") != null){
+			return true;
+		}
+		return false;
+	}
 }
