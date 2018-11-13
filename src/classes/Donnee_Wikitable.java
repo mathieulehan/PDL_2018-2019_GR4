@@ -1,9 +1,13 @@
 package classes;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 
 import org.json.JSONObject;
@@ -13,6 +17,7 @@ import exceptions.LangueException;
 public class Donnee_Wikitable extends Donnee{
 
 	private String wikitext;
+	private String outputPath = "src/ressources/wikitext.csv";
 	
 	public Donnee_Wikitable(String wikitext){
 		this.wikitext = wikitext;
@@ -69,7 +74,7 @@ public class Donnee_Wikitable extends Donnee{
 	 */
 	public void wikitableVersCSV(String wikitable) {
 		try {
-			FileWriter writer = new FileWriter("C:\\Users\\mathi\\Documents\\wikitext.csv");
+			FileWriter writer = new FileWriter(outputPath);
 			if(wikitable.contains("|-")){
 				wikitable = wikitable.replaceAll("\n", "");
 				String[] lignes = wikitable.split("\\|-");
@@ -95,5 +100,4 @@ public class Donnee_Wikitable extends Donnee{
 			e.getStackTrace();
 		}
 	}
-	
 }

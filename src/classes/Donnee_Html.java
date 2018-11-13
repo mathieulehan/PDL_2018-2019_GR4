@@ -22,10 +22,11 @@ import exceptions.LangueException;
 
 public class Donnee_Html extends Donnee{
 	/**
-	 * Le HTML de la page wikipédia
+	 * Le HTML de la page wikipedia
 	 */
 	private String html;
-
+	private String outputPath = "src/ressources/html.csv";
+	
 	public Donnee_Html(String html) {
 		this.html = html;
 	}
@@ -39,7 +40,7 @@ public class Donnee_Html extends Donnee{
 		String html = "" + recupContenu(page);
 		
 		Donnee_Html donneeHTML = new Donnee_Html(html);
-		donneeHTML.htmlToCSV(html, FileSystems.getDefault().getPath(".") + "html.csv");
+		donneeHTML.htmlVersCSV(html, outputPath);
 	}
 	
 	public String recupContenu(URL url) throws IOException {
@@ -56,11 +57,11 @@ public class Donnee_Html extends Donnee{
 	}
 	
 	/**
-	 * Méthode qui parcoure les tables du HTML et les convertit en CSV
+	 * Methode qui parcoure les tables du HTML et les convertit en CSV
 	 * @param html
 	 * @throws IOException 
 	 */
-	public void htmlToCSV(String html, String path) {
+	public void htmlVersCSV(String html, String path) {
 		try {
 			FileWriter writer = new FileWriter(path);
 			Document page = Jsoup.parseBodyFragment(html);
