@@ -6,14 +6,12 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import classes.ExtractWikitable;
-import classes.ParseHTML;
 
 class ParseHTMLTest {
 
 	@Test
 	void testRecupTables() {
-		ExtractWikitable testExtractTable = new ExtractWikitable();
+		/*ExtractWikitable testExtractTable = new ExtractWikitable();
 		StringBuilder contentBuilder = new StringBuilder();
 		try {
 		    BufferedReader in = new BufferedReader(new FileReader("test.html"));
@@ -26,7 +24,7 @@ class ParseHTMLTest {
 		}
 		String html = contentBuilder.toString();
 		ParseHTML testParseHTML = new ParseHTML(html);
-		testParseHTML.htmlToCSV(html, "C:\\Users\\mathi\\Documents\\wikitext.csv");
+		testParseHTML.htmlToCSV(html, "C:\\Users\\mathi\\Documents\\wikitext.csv");*/
 	}
 
 }
