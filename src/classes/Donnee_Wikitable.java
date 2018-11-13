@@ -8,6 +8,8 @@ import java.net.URL;
 
 import org.json.JSONObject;
 
+import exceptions.LangueException;
+
 public class Donnee_Wikitable extends Donnee{
 
 	private String wikitext;
@@ -16,7 +18,11 @@ public class Donnee_Wikitable extends Donnee{
 		this.wikitext = wikitext;
 	}
 	
-	public void extraire(String langue, String titre) throws IOException {
+	public void extraire(String langue, String titre) throws IOException, LangueException {
+		if (langue != "fr" || langue != "en" ) {
+			throw new LangueException("Exception : Langue invalide");
+		}
+		
 		URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
 		String json = recupContenu(page);
 		Donnee_Wikitable parserWikitext = new Donnee_Wikitable(json);
@@ -24,7 +30,7 @@ public class Donnee_Wikitable extends Donnee{
 		parserWikitext.wikitableVersCSV(wikitable);
 	}
 
-	public static String recupContenu(URL url) throws IOException {
+	public String recupContenu(URL url) throws IOException {
 		StringBuilder result = new StringBuilder();
 		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 
