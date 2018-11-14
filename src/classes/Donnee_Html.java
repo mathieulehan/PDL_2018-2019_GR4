@@ -12,8 +12,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import exceptions.LangueException;
-
 /**
  * Classe permettant de convertir des tables html en CSV
  * @author mathi
@@ -31,11 +29,7 @@ public class Donnee_Html extends Donnee{
 		this.html = html;
 	}
 	
-	public void extraire(String langue, String titre) throws IOException, LangueException {
-		if (langue != "fr" || langue != "en" ) {
-			throw new LangueException("Exception : Langue invalide");
-		}
-		
+	public void extraire(String langue, String titre) throws IOException {
 		URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
 		String html = "" + recupContenu(page);
 		
@@ -80,5 +74,15 @@ public class Donnee_Html extends Donnee{
 			e.getStackTrace();
 		}
 		
+	}
+
+	@Override
+	boolean pageComporteTableau(String html) {
+		// TODO Auto-generated method stub
+		Document page = Jsoup.parseBodyFragment(html);
+		if(page.getElementsByTag("table") != null){
+			return true;
+		}
+		return false;
 	}
 }

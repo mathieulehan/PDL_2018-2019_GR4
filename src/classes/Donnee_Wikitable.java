@@ -12,7 +12,6 @@ import java.net.URL;
 
 import org.json.JSONObject;
 
-import exceptions.LangueException;
 
 public class Donnee_Wikitable extends Donnee{
 
@@ -23,11 +22,7 @@ public class Donnee_Wikitable extends Donnee{
 		this.wikitext = wikitext;
 	}
 	
-	public void extraire(String langue, String titre) throws IOException, LangueException {
-		if (langue != "fr" || langue != "en" ) {
-			throw new LangueException("Exception : Langue invalide");
-		}
-		
+	public void extraire(String langue, String titre) throws IOException {
 		URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
 		String json = recupContenu(page);
 		Donnee_Wikitable parserWikitext = new Donnee_Wikitable(json);
@@ -99,5 +94,14 @@ public class Donnee_Wikitable extends Donnee{
 		catch (IOException e) {
 			e.getStackTrace();
 		}
+	}
+
+	@Override
+	boolean pageComporteTableau(String wikitable) {
+		// TODO Auto-generated method stub
+		if(wikitable.contains("|-")){
+			return true;
+		}
+		return false;
 	}
 }
