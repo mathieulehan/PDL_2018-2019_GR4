@@ -1,21 +1,19 @@
 package test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.junit.Test;
 import classes.Url;
 import exceptions.UrlInvalideException;
 
 public class UrlTest {
-
-	@Test(expected = UrlInvalideException.class)
-	public void detection_langues_non_geree() throws MalformedURLException, UrlInvalideException {
-		Url url = new Url(new URL("https://fy.wikipedia.org/wiki/Espagne"));
-		url.estLangueValide();
+	
+	@Test
+	public void titre_url_egal_espagne() throws IOException {
+		Url url = new Url(new URL("https://fr.wikipedia.org/wiki/Espagne"));
+		assertEquals("Espagne", url.getTitre());
 	}
 	
 	@Test
@@ -24,17 +22,21 @@ public class UrlTest {
 		assertTrue(url.testerConnexionHTTP());
 	}
 	
-	//JE VEUX UrlInvalideException, pas MalformedURLException
-	@Test(expected = MalformedURLException.class)
-	public void detection_titre_incomplet() throws UrlInvalideException, MalformedURLException {
+	@Test(expected = UrlInvalideException.class)
+	public void detection_langues_non_geree() throws UrlInvalideException, IOException {
+		Url url = new Url(new URL("https://fy.wikipedia.org/wiki/Espagne"));
+		url.estLangueValide();
+	}
+	
+	@Test(expected = UrlInvalideException.class)
+	public void detection_titre_incomplet() throws UrlInvalideException, IOException {
 		Url url = new Url(new URL("//https://fr.wikipedia.org/wiki/"));
 		url.estTitreValide();
 	}
 	
-	//JE VEUX UrlInvalideException, pas MalformedURLException
-	@Test(expected = MalformedURLException.class)
-	public void detection_titre_incomplet2() throws UrlInvalideException, IOException {
-		Url url = new Url(new URL("//https://fr.wikipedia.org/wiki/"));
+	@Test(expected = UrlInvalideException.class)
+	public void detection_titre_langue_incomplet() throws UrlInvalideException, IOException {
+		Url url = new Url(new URL("//https://.wikipedia.org/wiki/"));
 		url.estUrlValide();
 	}
 	
