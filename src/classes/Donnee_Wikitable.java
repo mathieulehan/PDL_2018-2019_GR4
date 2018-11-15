@@ -1,74 +1,53 @@
 package classes;
 
-import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.json.JSONObject;
 
+import exceptions.ExtractionInvalideException;
+import exceptions.UrlInvalideException;
+
 /**
- * Classe permettant de recuperer et convertir des tables html en CSV
+ * Classe permettant de recuperer et convertir des tables HTML en CSV
  * @author mathi & thomas
  *
  */
 
 public class Donnee_Wikitable extends Donnee{
 
-	private String wikitext;
-	private String outputPath = "src/ressources/wikitext.csv";
+	private String wikitable;
 	private int lignesEcrites = 0;
 	private int colonnesEcrites = 0;
 	
 	public int getColonnesEcrites() {
 		return colonnesEcrites;
 	}
-
-	public int getLignesEcrites() {
-		return lignesEcrites;
-	}
-
-	public Donnee_Wikitable(String wikitext){
-		this.wikitext = wikitext;
-	}
 	
 	/**
-	 * recupere les donnees en json pour les mettre dans un csv
-	 * @param langue
-	 * @param titre
-	 * @throws IOException
-	 */
-	public void extraire(String langue, String titre) throws IOException {
-		URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
-		String json = recupContenu(page);
-		Donnee_Wikitable parserWikitext = new Donnee_Wikitable(json);
-		String wikitable = parserWikitext.jsonVersWikitable(json);
-		parserWikitext.wikitableVersCSV(wikitable);
-	}
-	
-	/**
-	 * A partir de l'url donnee, recupere le contenu de la page en json
+	 * Recupere les donnees en JSON pour les mettre dans un CSV
 	 * @param url
-	 * @return
 	 * @throws IOException
+	 * @throws UrlInvalideException 
 	 */
-
-	public String recupContenu(URL url) throws IOException {
-		StringBuilder result = new StringBuilder();
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-
-		String inputLine;
-
-		while ((inputLine = in.readLine()) != null)
-			result.append(inputLine);
-
-		in.close();
-		return result.toString();
+	@Override
+	public void extraire(Url url) throws IOException, UrlInvalideException {
+		if(url.estUrlValide()) {
+			String langue = url.getLangue();
+			String titre = url.getTitre();
+			
+			URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
+			String json = recupContenu(page);
+			
+			Donnee_Wikitable parserWikitext = new Donnee_Wikitable(json);
+			wikitable = parserWikitext.jsonVersWikitable(json);
+			parserWikitext.wikitableVersCSV(wikitable);
+		}
 	}
 	
 	/**
-	 * Recupere le wikitext dans le json
+	 * Recupere le wikitext dans le JSON
 	 * @param json
 	 * @return
 	 */
@@ -88,10 +67,11 @@ public class Donnee_Wikitable extends Donnee{
 	}
 	
 	/**
-	 * Parcoure le json, en extrait les tableaux et les convertit en CSV
+	 * Parcoure le JSON, extrait les tableaux et les convertis en CSV
 	 * @param wikitable
 	 */
 	public void wikitableVersCSV(String wikitable) {
+		String outputPath = "src/ressources/wikitext.csv";
 		try {
 			FileWriter writer = new FileWriter(outputPath);
 			if(wikitable.contains("|-")){
@@ -123,17 +103,23 @@ public class Donnee_Wikitable extends Donnee{
 	}
 
 	/**
-	 * Verification de la presence de tableaux dans les donnees 
-	 * @param wikitable
-	 * @return
+	 * Verification de la presence de tableaux dans les donnees
+	 * @return boolean
+	 * @throws ExtractionInvalideException 
 	 */
-	
 	@Override
-	boolean pageComporteTableau(String wikitable) {
-		// TODO Auto-generated method stub
-		if(wikitable.contains("|-")){
-			return true;
+	boolean pageComporteTableau() throws ExtractionInvalideException {
+		if(!wikitable.contains("|-")){
+			throw new ExtractionInvalideException("Aucun tableau présent dans la page");
 		}
-		return false;
+		return true;
+	}
+
+	public int getLignesEcrites() {
+		return lignesEcrites;
+	}
+
+	public Donnee_Wikitable(String wikitable){
+		this.wikitable = wikitable;
 	}
 }

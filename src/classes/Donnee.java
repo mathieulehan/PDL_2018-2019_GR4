@@ -1,6 +1,8 @@
 package classes;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import exceptions.ExtractionInvalideException;
@@ -20,16 +22,28 @@ abstract class Donnee{
 	 * Extraction des donnees
 	 * @param url
 	 * @throws IOException
+	 * @throws ExtractionInvalideException 
 	 */
-	abstract void extraire(Url url) throws IOException, UrlInvalideException;
+	abstract void extraire(Url url) throws IOException, UrlInvalideException, ExtractionInvalideException;
 	
 	/**
-	 * Recuperation des donnees a partir de l'url
+	 * A partir de l'url donnee, recupere le contenu de la page en json
 	 * @param url
-	 * @return
+	 * @return String
 	 * @throws IOException
 	 */
-	abstract String recupContenu(URL url) throws IOException;
+	public String recupContenu(URL url) throws IOException {
+		StringBuilder result = new StringBuilder();
+		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+
+		String inputLine;
+
+		while ((inputLine = in.readLine()) != null)
+			result.append(inputLine);
+
+		in.close();
+		return result.toString();
+	}
 	
 	/**
 	 * Verification de la presence de tableaux
@@ -37,7 +51,7 @@ abstract class Donnee{
 	 * @return
 	 * @throws ExtractionInvalideException 
 	 */
-	abstract boolean pageComporteTableau(String donnee) throws ExtractionInvalideException;
+	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
 
 	/**
 	 * Demarre le chronometre en back

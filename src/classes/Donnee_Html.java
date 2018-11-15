@@ -1,9 +1,7 @@
 package classes;
 
-import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
@@ -34,82 +32,56 @@ public class Donnee_Html extends Donnee{
 	}
 
 	/**
-	 * Recupere le contenu et le modifie en csv
+	 * Recupere le contenu et le modifie en CSV
 	 * @param url
 	 * @throws IOException
 	 * @throws UrlInvalideException 
+	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	public void extraire(Url url) throws UrlInvalideException, IOException {
+	public void extraire(Url url) throws UrlInvalideException, IOException, ExtractionInvalideException {
 		if(url.estUrlValide()) {
 			String langue = url.getLangue();
 			String titre = url.getTitre();
 
 			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			String html = "" + recupContenu(page);
+			html = "" + recupContenu(page);
 
 			Donnee_Html donneeHTML = new Donnee_Html(html);
-			donneeHTML.htmlVersCSV(html, outputPath);
+			donneeHTML.htmlVersCSV();
 		}
-	}
-
-	/**
-	 * A partir de l'url donnee, recupere le contenu de la page en json
-	 * @param url
-	 * @return String
-	 * @throws IOException
-	 */
-	@Override
-	public String recupContenu(URL url) throws IOException {
-		StringBuilder result = new StringBuilder();
-		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-
-		String inputLine;
-
-		while ((inputLine = in.readLine()) != null)
-			result.append(inputLine);
-
-		in.close();
-		return result.toString();
 	}
 
 	/**
 	 * Methode qui parcoure les tables du HTML et les convertit en CSV
-	 * @param html
-	 * @param path
 	 * @throws IOException 
+	 * @throws ExtractionInvalideException
 	 */
-	public void htmlVersCSV(String html, String path) {
-		try {
-			FileWriter writer = new FileWriter(path);
-			Document page = Jsoup.parseBodyFragment(html);
-			Elements lignes = page.getElementsByTag("tr");
+	public void htmlVersCSV() throws IOException, ExtractionInvalideException {
+		FileWriter writer = new FileWriter(outputPath);
+		Document page = Jsoup.parseBodyFragment(html);
+		Elements lignes = page.getElementsByTag("tr");
 
-			for (Element ligne : lignes) {
-				Elements cellules = ligne.getElementsByTag("td");
-				for (Element cellule : cellules) {
-					writer.write(cellule.text().concat("; "));
-					colonnesEcrites++;
-				}
-				writer.write("\n");
-				lignesEcrites++;
+		for (Element ligne : lignes) {
+			Elements cellules = ligne.getElementsByTag("td");
+			for (Element cellule : cellules) {
+				writer.write(cellule.text().concat("; "));
+				colonnesEcrites++;
 			}
-			writer.close();
+			writer.write("\n");
+			lignesEcrites++;
 		}
-		catch (IOException e) {
-			e.getStackTrace();
-		}
+		writer.close();
 
 	}
 
 	/**
-	 * Verification de la presence de tableaux dans les donnees 
-	 * @param wikitable
+	 * Verification de la presence de tableaux dans les donnees
 	 * @return boolean
 	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	public boolean pageComporteTableau(String html) throws ExtractionInvalideException {
+	public boolean pageComporteTableau() throws ExtractionInvalideException {
 		Document page = Jsoup.parseBodyFragment(html);
 		if(page.getElementsByTag("table") == null){
 			throw new ExtractionInvalideException("Aucun tableau présent dans la page");

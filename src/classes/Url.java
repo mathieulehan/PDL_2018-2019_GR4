@@ -32,7 +32,7 @@ public class Url {
 	 * @return boolean
 	 * @throws UrlInvalideException 
 	 */
-	private boolean estLangueValide() throws UrlInvalideException {
+	public boolean estLangueValide() throws UrlInvalideException {
 		langue = url.toString().substring(8, url.toString().indexOf('.'));
 		if (!langue.matches("fr|en")) {
 			throw new UrlInvalideException("Langue invalide");
@@ -45,7 +45,7 @@ public class Url {
 	 * @return boolean
 	 * @throws UrlInvalideException
 	 */
-	private boolean estTitreValide() throws UrlInvalideException {
+	public boolean estTitreValide() throws UrlInvalideException {
 		titre = url.toString().substring(url.toString().lastIndexOf('/')+1);
 		if (!titre.matches("^[\\w]+$")) {
 			throw new UrlInvalideException("Titre de la page invalide");
@@ -60,7 +60,7 @@ public class Url {
 	 * @throws UrlInvalideException 
 	 * @throws IOException 
 	 */
-	private boolean testerConnexionHTTP() throws UrlInvalideException, IOException {
+	public boolean testerConnexionHTTP() throws UrlInvalideException, IOException {
 		HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
 		if (!(connexion.getResponseCode() == HttpURLConnection.HTTP_OK)) {
 			throw new UrlInvalideException("Page inexistante");
