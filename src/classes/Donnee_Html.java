@@ -23,7 +23,17 @@ public class Donnee_Html extends Donnee{
 	 */
 	private String html;
 	private String outputPath = "src/ressources/html.csv";
+	private int lignesEcrites = 0;
+	private int colonnesEcrites = 0;
 	
+	public int getColonnesEcrites() {
+		return colonnesEcrites;
+	}
+
+	public int getLignesEcrites() {
+		return lignesEcrites;
+	}
+
 	public Donnee_Html(String html) {
 		this.html = html;
 	}
@@ -77,8 +87,10 @@ public class Donnee_Html extends Donnee{
 				Elements cellules = ligne.getElementsByTag("td");
 				for (Element cellule : cellules) {
 					writer.write(cellule.text().concat("; "));
+					colonnesEcrites++;
 				}
 				writer.write("\n");
+				lignesEcrites++;
 			}
 			writer.close();
 		}
