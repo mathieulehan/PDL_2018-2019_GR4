@@ -79,5 +79,21 @@ public class Url {
 	public boolean estUrlValide() throws UrlInvalideException, IOException {
 		return estTitreValide() && estLangueValide() && testerConnexionHTTP();
 	}
+	
+	/**
+	 * Recuperer le titre de la page url
+	 * @return titre
+	 */
+	public String getTitre(){
+		return this.titre;
+	}
+	
+	/**
+	 * Recuperer la langue de la page url
+	 * @return langue
+	 */
+	public String getLangue() {
+		return this.langue;
+	}
 
 }
