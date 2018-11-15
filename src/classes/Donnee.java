@@ -3,13 +3,11 @@ package classes;
 import java.io.IOException;
 import java.net.URL;
 
-import exceptions.LangueException;
-
 abstract class Donnee{
 		
 	private long originalTime;
 	
-	abstract void extraire(String langue, String titre)  throws IOException, LangueException;
+	abstract void extraire(String langue, String titre)  throws IOException;
 	
 	abstract String recupContenu(URL url) throws IOException;
 	
