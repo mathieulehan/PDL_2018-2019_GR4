@@ -1,9 +1,11 @@
 package classes;
+
 /**
  * Classe permettant d'effectuer diverses comparaison entre les deux méthodes de récupération de table wikipedia
  * @author mathi
  *
  */
+
 public class ComparerCSV {
 
 	public boolean comparaisonTempsExecution(Donnee_Html html, Donnee_Wikitable wikitable) {
@@ -13,6 +15,10 @@ public class ComparerCSV {
 	public boolean comparaisonDonneesTableau(Donnee_Html html, Donnee_Wikitable wikitable) {
 		return false;
 	}
+	
+	/**
+	 * Donne le meilleur format entre les donnee html et wikitable
+	 */
 	
 	public Donnee meilleurFormat(Donnee_Html html, Donnee_Wikitable wikitable) {
 		if(comparaisonTempsExecution(html, wikitable) && comparaisonDonneesTableau(html, wikitable)){

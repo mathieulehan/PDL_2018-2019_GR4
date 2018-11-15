@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.FileSystems;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,8 +12,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Classe permettant de convertir des tables html en CSV
- * @author mathi
+ * Classe permettant de recuperer et convertir des tables html en CSV
+ * @author mathi & thomas
  *
  */
 
@@ -29,6 +28,13 @@ public class Donnee_Html extends Donnee{
 		this.html = html;
 	}
 	
+	/**
+	 * Recupere le contenu et le modifie en csv
+	 * @param langue
+	 * @param titre
+	 * @throws IOException
+	 */
+	
 	public void extraire(String langue, String titre) throws IOException {
 		URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
 		String html = "" + recupContenu(page);
@@ -37,6 +43,12 @@ public class Donnee_Html extends Donnee{
 		donneeHTML.htmlVersCSV(html, outputPath);
 	}
 	
+	/**
+	 * A partir de l'url donnee, recupere le contenu de la page en json
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 */
 	public String recupContenu(URL url) throws IOException {
 		StringBuilder result = new StringBuilder();
 		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -75,7 +87,12 @@ public class Donnee_Html extends Donnee{
 		}
 		
 	}
-
+	
+	/**
+	 * Verification de la presence de tableaux dans les donnees 
+	 * @param wikitable
+	 * @return
+	 */
 	@Override
 	boolean pageComporteTableau(String html) {
 		// TODO Auto-generated method stub
