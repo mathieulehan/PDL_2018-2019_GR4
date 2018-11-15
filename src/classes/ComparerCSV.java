@@ -15,7 +15,13 @@ public class ComparerCSV {
 	}
 	
 	public Donnee meilleurFormat(Donnee_Html html, Donnee_Wikitable wikitable) {
-		return wikitable;
+		if(comparaisonTempsExecution(html, wikitable) && comparaisonDonneesTableau(html, wikitable)){
+			return html;
+		}else if(!comparaisonTempsExecution(html, wikitable) && !comparaisonDonneesTableau(html, wikitable)) {
+			return wikitable;
+		}else {
+			return null;
+		}
 	}
 	
 }

@@ -5,7 +5,7 @@ import java.net.URL;
 
 abstract class Donnee{
 		
-	private long originalTime;
+	private long tempsOriginal;
 	
 	abstract void extraire(String langue, String titre)  throws IOException;
 	
@@ -14,10 +14,10 @@ abstract class Donnee{
 	abstract boolean pageComporteTableau(String donnee);
 
 	public void start(){
-		this.originalTime = System.currentTimeMillis();
+		this.tempsOriginal = System.currentTimeMillis();
 	}
 
 	public long getTime(){
-		return System.currentTimeMillis() - originalTime;
+		return System.currentTimeMillis() - tempsOriginal;
 	}
 }
