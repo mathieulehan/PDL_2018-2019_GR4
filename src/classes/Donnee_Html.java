@@ -11,6 +11,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import exceptions.ExtractionInvalideException;
+import exceptions.UrlInvalideException;
+
 /**
  * Classe permettant de recuperer et convertir des tables html en CSV
  * @author mathi & thomas
@@ -25,40 +28,38 @@ public class Donnee_Html extends Donnee{
 	private String outputPath = "src/ressources/html.csv";
 	private int lignesEcrites = 0;
 	private int colonnesEcrites = 0;
-	
-	public int getColonnesEcrites() {
-		return colonnesEcrites;
-	}
-
-	public int getLignesEcrites() {
-		return lignesEcrites;
-	}
 
 	public Donnee_Html(String html) {
 		this.html = html;
 	}
-	
+
 	/**
 	 * Recupere le contenu et le modifie en csv
-	 * @param langue
-	 * @param titre
+	 * @param url
 	 * @throws IOException
+	 * @throws UrlInvalideException 
 	 */
-	
-	public void extraire(String langue, String titre) throws IOException {
-		URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-		String html = "" + recupContenu(page);
-		
-		Donnee_Html donneeHTML = new Donnee_Html(html);
-		donneeHTML.htmlVersCSV(html, outputPath);
+	@Override
+	public void extraire(Url url) throws UrlInvalideException, IOException {
+		if(url.estUrlValide()) {
+			String langue = url.getLangue();
+			String titre = url.getTitre();
+
+			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
+			String html = "" + recupContenu(page);
+
+			Donnee_Html donneeHTML = new Donnee_Html(html);
+			donneeHTML.htmlVersCSV(html, outputPath);
+		}
 	}
-	
+
 	/**
 	 * A partir de l'url donnee, recupere le contenu de la page en json
 	 * @param url
-	 * @return
+	 * @return String
 	 * @throws IOException
 	 */
+	@Override
 	public String recupContenu(URL url) throws IOException {
 		StringBuilder result = new StringBuilder();
 		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -71,10 +72,11 @@ public class Donnee_Html extends Donnee{
 		in.close();
 		return result.toString();
 	}
-	
+
 	/**
 	 * Methode qui parcoure les tables du HTML et les convertit en CSV
 	 * @param html
+	 * @param path
 	 * @throws IOException 
 	 */
 	public void htmlVersCSV(String html, String path) {
@@ -82,7 +84,7 @@ public class Donnee_Html extends Donnee{
 			FileWriter writer = new FileWriter(path);
 			Document page = Jsoup.parseBodyFragment(html);
 			Elements lignes = page.getElementsByTag("tr");
-			
+
 			for (Element ligne : lignes) {
 				Elements cellules = ligne.getElementsByTag("td");
 				for (Element cellule : cellules) {
@@ -97,21 +99,29 @@ public class Donnee_Html extends Donnee{
 		catch (IOException e) {
 			e.getStackTrace();
 		}
-		
+
 	}
-	
+
 	/**
 	 * Verification de la presence de tableaux dans les donnees 
 	 * @param wikitable
-	 * @return
+	 * @return boolean
+	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	boolean pageComporteTableau(String html) {
-		// TODO Auto-generated method stub
+	public boolean pageComporteTableau(String html) throws ExtractionInvalideException {
 		Document page = Jsoup.parseBodyFragment(html);
-		if(page.getElementsByTag("table") != null){
-			return true;
+		if(page.getElementsByTag("table") == null){
+			throw new ExtractionInvalideException("Aucun tableau présent dans la page");
 		}
-		return false;
+		return true;
+	}
+
+	public int getColonnesEcrites() {
+		return colonnesEcrites;
+	}
+
+	public int getLignesEcrites() {
+		return lignesEcrites;
 	}
 }

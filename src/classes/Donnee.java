@@ -3,6 +3,9 @@ package classes;
 import java.io.IOException;
 import java.net.URL;
 
+import exceptions.ExtractionInvalideException;
+import exceptions.UrlInvalideException;
+
 /**
  * Classe abstraite pour recuperer les donnees
  * @author thomas
@@ -15,11 +18,10 @@ abstract class Donnee{
 	
 	/**
 	 * Extraction des donnees
-	 * @param langue
-	 * @param titre
+	 * @param url
 	 * @throws IOException
 	 */
-	abstract void extraire(String langue, String titre)  throws IOException;
+	abstract void extraire(Url url) throws IOException, UrlInvalideException;
 	
 	/**
 	 * Recuperation des donnees a partir de l'url
@@ -33,8 +35,9 @@ abstract class Donnee{
 	 * Verification de la presence de tableaux
 	 * @param donnee
 	 * @return
+	 * @throws ExtractionInvalideException 
 	 */
-	abstract boolean pageComporteTableau(String donnee);
+	abstract boolean pageComporteTableau(String donnee) throws ExtractionInvalideException;
 
 	/**
 	 * Demarre le chronometre en back
