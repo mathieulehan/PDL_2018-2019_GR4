@@ -9,6 +9,9 @@ import java.net.UnknownHostException;
 
 public class Donnee_WikitableTest {
 	
+	/**
+	 * Renvoie un message dans le cas ou l URL est fausse
+	 */
 	@Test
 	void testPageNonExistante() {
 		/*ExtractWikitable testExtractPageNonExistante = new ExtractWikitable();
@@ -17,13 +20,15 @@ public class Donnee_WikitableTest {
 	    });*/
 	}
 	
+	/**
+	 * Renvoie un message dans le cas ou la langue choisie est erronee
+	 */
 	@Test
 	void erreurLangue() {
 		/*ExtractWikitable testErreurLangue = new ExtractWikitable();
 		assertThrows(UnknownHostException.class,() -> {
 			testErreurLangue.extractWikiTable("erreurLangue", "render", "Wikipedia:Unusual_articles/Places_and_infrastructure");
 	    });*/
-		
 	}
 	
 	/**
