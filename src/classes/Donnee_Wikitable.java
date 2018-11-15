@@ -1,27 +1,44 @@
 package classes;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URL;
 
 import org.json.JSONObject;
 
+/**
+ * Classe permettant de recuperer et convertir des tables html en CSV
+ * @author mathi & thomas
+ *
+ */
 
 public class Donnee_Wikitable extends Donnee{
 
 	private String wikitext;
 	private String outputPath = "src/ressources/wikitext.csv";
+	private int lignesEcrites = 0;
+	private int colonnesEcrites = 0;
 	
+	public int getColonnesEcrites() {
+		return colonnesEcrites;
+	}
+
+	public int getLignesEcrites() {
+		return lignesEcrites;
+	}
+
 	public Donnee_Wikitable(String wikitext){
 		this.wikitext = wikitext;
 	}
 	
+	/**
+	 * recupere les donnees en json pour les mettre dans un csv
+	 * @param langue
+	 * @param titre
+	 * @throws IOException
+	 */
 	public void extraire(String langue, String titre) throws IOException {
 		URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
 		String json = recupContenu(page);
@@ -29,6 +46,13 @@ public class Donnee_Wikitable extends Donnee{
 		String wikitable = parserWikitext.jsonVersWikitable(json);
 		parserWikitext.wikitableVersCSV(wikitable);
 	}
+	
+	/**
+	 * A partir de l'url donnee, recupere le contenu de la page en json
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 */
 
 	public String recupContenu(URL url) throws IOException {
 		StringBuilder result = new StringBuilder();
@@ -64,7 +88,7 @@ public class Donnee_Wikitable extends Donnee{
 	}
 	
 	/**
-	 * Parcoure le json, en extrait les tables et les convertit en CSV
+	 * Parcoure le json, en extrait les tableaux et les convertit en CSV
 	 * @param wikitable
 	 */
 	public void wikitableVersCSV(String wikitable) {
@@ -77,11 +101,13 @@ public class Donnee_Wikitable extends Donnee{
 					if (ligne.startsWith("| ")) {
 						int finHeader = ligne.indexOf("]]'''|", 0);
 						ligne = ligne.substring(0, finHeader) + "; " + ligne.substring(finHeader, ligne.length());
+						colonnesEcrites++;
 						ligne = ligne.replaceAll("(\\{\\{convert\\|)|(\\||adj=\\w+}})|(\\[\\[)|(\\w+]])", "");
 						ligne = ligne.replaceAll("\\{(.*?)\\}", "");
 //						ligne = ligne.replaceAll( "([^;&\\W&])+" , "");
 						ligne = ligne.replaceAll(" (]]''')|( ''')", "");
 						writer.write(ligne.concat("\n"));
+						lignesEcrites++;
 					}
 					else{
 						ligne = "";
@@ -96,6 +122,12 @@ public class Donnee_Wikitable extends Donnee{
 		}
 	}
 
+	/**
+	 * Verification de la presence de tableaux dans les donnees 
+	 * @param wikitable
+	 * @return
+	 */
+	
 	@Override
 	boolean pageComporteTableau(String wikitable) {
 		// TODO Auto-generated method stub
