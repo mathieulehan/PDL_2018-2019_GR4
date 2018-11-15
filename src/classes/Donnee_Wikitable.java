@@ -17,7 +17,17 @@ public class Donnee_Wikitable extends Donnee{
 
 	private String wikitext;
 	private String outputPath = "src/ressources/wikitext.csv";
+	private int lignesEcrites = 0;
+	private int colonnesEcrites = 0;
 	
+	public int getColonnesEcrites() {
+		return colonnesEcrites;
+	}
+
+	public int getLignesEcrites() {
+		return lignesEcrites;
+	}
+
 	public Donnee_Wikitable(String wikitext){
 		this.wikitext = wikitext;
 	}
@@ -77,11 +87,13 @@ public class Donnee_Wikitable extends Donnee{
 					if (ligne.startsWith("| ")) {
 						int finHeader = ligne.indexOf("]]'''|", 0);
 						ligne = ligne.substring(0, finHeader) + "; " + ligne.substring(finHeader, ligne.length());
+						colonnesEcrites++;
 						ligne = ligne.replaceAll("(\\{\\{convert\\|)|(\\||adj=\\w+}})|(\\[\\[)|(\\w+]])", "");
 						ligne = ligne.replaceAll("\\{(.*?)\\}", "");
 //						ligne = ligne.replaceAll( "([^;&\\W&])+" , "");
 						ligne = ligne.replaceAll(" (]]''')|( ''')", "");
 						writer.write(ligne.concat("\n"));
+						lignesEcrites++;
 					}
 					else{
 						ligne = "";
