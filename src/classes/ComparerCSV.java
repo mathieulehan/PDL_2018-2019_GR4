@@ -1,6 +1,6 @@
 package classes;
 /**
- * Classe permettant d'effectuer diverses comparaison entre les deux méthodes de récupération de table wikipedia
+ * Classe permettant d'effectuer diverses comparaison entre les deux methodes de recuperation de table wikipedia
  * @author mathi
  *
  */
