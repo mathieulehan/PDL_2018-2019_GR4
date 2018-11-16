@@ -1,11 +1,19 @@
 package test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.jupiter.api.Test;
+
+import classes.Donnee_Html;
+import classes.Url;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import static org.mockito.Mockito.*;
 
 public class Donnee_HtmlTest {
 	
@@ -37,6 +45,16 @@ public class Donnee_HtmlTest {
 	 */
 	@Test
 	void testTempsExec(long nbATest) {
+		URL monUrl;
+		try {
+			monUrl = new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon");
+			Url newUrl = new Url(monUrl);
+			Donnee_Html test = new Donnee_Html("");
+			
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
 		assertTrue("Temps d'execution de " + nbATest/1000 + " secondes", nbATest < 24000);
 	}
 	

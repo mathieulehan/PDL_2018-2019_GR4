@@ -115,7 +115,7 @@ public class Donnee_Wikitable extends Donnee{
 				String[] lignes = wikitable.split("(\\|-)");
 				for (String ligne : lignes) {
 					if (ligne.startsWith("! ")) {
-						
+						ligne.substring(14, ligne.length());
 						writer.write(ligne.concat("\n"));
 					}
 					else{

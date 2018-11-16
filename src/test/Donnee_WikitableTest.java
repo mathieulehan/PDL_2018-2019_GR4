@@ -1,10 +1,17 @@
 package test;
 
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+
+import classes.Donnee_Wikitable;
+import classes.Url;
+import exceptions.ExtractionInvalideException;
 
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
 
 public class Donnee_WikitableTest {
@@ -65,6 +72,39 @@ public class Donnee_WikitableTest {
 			}
 		}
 		assertTrue("Nombre de cellules differentes", diff == 0);
+	}
+	
+	/**
+	 * Test tout a la wanaghen, en gros c est un main dans les tests
+	 */
+	@Test
+	void testCreationCSV() {
+		URL monUrl;
+		String contenu, wikitable = "";
+		try {
+			monUrl = new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon");
+			Url newUrl = new Url(monUrl);
+			Donnee_Wikitable test = new Donnee_Wikitable("");
+			try {
+				contenu = test.recupContenu(newUrl.url);
+				try {
+					wikitable = test.jsonVersWikitable(contenu);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExtractionInvalideException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				test.wikitableEnTeteVersCSV(wikitable);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
