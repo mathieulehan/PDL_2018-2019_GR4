@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import org.json.JSONException;
+
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 
@@ -23,8 +25,9 @@ abstract class Donnee{
 	 * @param url
 	 * @throws IOException
 	 * @throws ExtractionInvalideException 
+	 * @throws JSONException 
 	 */
-	abstract void extraire(Url url) throws IOException, UrlInvalideException, ExtractionInvalideException;
+	abstract void extraire(Url url) throws IOException, UrlInvalideException, ExtractionInvalideException, JSONException;
 	
 	/**
 	 * A partir de l'url donnee, recupere le contenu de la page en json

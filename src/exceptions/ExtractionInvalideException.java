@@ -2,8 +2,8 @@ package exceptions;
 
 /**
  * 
- * Classe créant une Exception dans différents cas d'erreur lors de l'extraction des données de la page Wikipédia :
- * - Pas de tableaux dans la page
+ * Classe creant une Exception dans differents cas d'erreur lors de l'extraction des donnees de la page Wikipedia :
+ * - Pas de tableau dans la page
  * 
  * @author Charlotte
  *

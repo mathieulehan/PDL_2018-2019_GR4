@@ -55,9 +55,8 @@ public class Donnee_Html extends Donnee{
 	/**
 	 * Methode qui parcoure les tables du HTML et les convertit en CSV
 	 * @throws IOException 
-	 * @throws ExtractionInvalideException
 	 */
-	public void htmlVersCSV() throws IOException, ExtractionInvalideException {
+	public void htmlVersCSV() throws IOException {
 		FileWriter writer = new FileWriter(outputPath);
 		Document page = Jsoup.parseBodyFragment(html);
 		Elements lignes = page.getElementsByTag("tr");
