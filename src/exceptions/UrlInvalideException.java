@@ -2,7 +2,7 @@ package exceptions;
 
 /**
  * 
- * Classe créant une Exception dans différents cas d'erreur d'URL :
+ * Classe creant une Exception dans differents cas d'erreur d'URL :
  * - URL d'une page inexistante
  * - URL inexistante
  * 
