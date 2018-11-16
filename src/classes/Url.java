@@ -2,6 +2,7 @@ package classes;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import exceptions.UrlInvalideException;
@@ -17,10 +18,6 @@ public class Url {
 	public String titre;
 	public String langue;
 
-	/**
-	 * Constructeur
-	 * @param url
-	 */
 	public Url(URL url) {
 		this.url = url;
 		this.titre = "";
@@ -43,12 +40,12 @@ public class Url {
 	/**
 	 * Verification du titre de la page
 	 * @return boolean
-	 * @throws UrlInvalideException
+	 * @throws MalformedURLException 
 	 */
-	public boolean estTitreValide() throws UrlInvalideException {
+	public boolean estTitreValide() throws MalformedURLException {
 		titre = url.toString().substring(url.toString().lastIndexOf('/')+1);
 		if (!titre.matches("^[\\w]+$")) {
-			throw new UrlInvalideException("Titre de la page invalide");
+			throw new MalformedURLException("Titre de la page invalide");
 		}
 		return true;
 	}
@@ -58,39 +55,41 @@ public class Url {
 	 * ATTENTION methode lourde (en temps et en memoire)
 	 * @return boolean
 	 * @throws UrlInvalideException 
-	 * @throws IOException 
 	 */
-	public boolean testerConnexionHTTP() throws UrlInvalideException, IOException {
-		HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
-		if (!(connexion.getResponseCode() == HttpURLConnection.HTTP_OK)) {
-			throw new UrlInvalideException("Page inexistante");
+	public boolean testerConnexionHTTP() throws UrlInvalideException {
+		try {
+			HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
+			if (!(connexion.getResponseCode() == HttpURLConnection.HTTP_OK)) {
+				throw new UrlInvalideException("Page inexistante");
+			}
+			connexion.disconnect();
+			return true;
+		} catch (Exception e) {
+			throw new UrlInvalideException("Connexion echouee");
 		}
-		connexion.disconnect();
-		return true;
 	}
 
 	/**
 	 * Methode implementant les precedentes methodes
 	 * @return boolean
 	 * @throws UrlInvalideException
-	 * @throws LangueException
-	 * @throws IOException 
+	 * @throws MalformedURLException 
 	 */
-	public boolean estUrlValide() throws UrlInvalideException, IOException {
-		return estTitreValide() && estLangueValide() && testerConnexionHTTP();
+	public boolean estUrlValide() throws UrlInvalideException, MalformedURLException {
+		return estTitreValide() && estLangueValide() /*&& testerConnexionHTTP()*/;
 	}
-	
+
 	/**
 	 * Recuperer le titre de la page url
-	 * @return titre
+	 * @return String titre
 	 */
 	public String getTitre(){
 		return this.titre;
 	}
-	
+
 	/**
 	 * Recuperer la langue de la page url
-	 * @return langue
+	 * @return String langue
 	 */
 	public String getLangue() {
 		return this.langue;
