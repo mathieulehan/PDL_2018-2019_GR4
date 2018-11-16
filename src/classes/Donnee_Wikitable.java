@@ -105,6 +105,31 @@ public class Donnee_Wikitable extends Donnee{
 			e.getStackTrace();
 		}
 	}
+	
+	public void wikitableEnTeteVersCSV(String wikitable) {
+		String outputPath = "src/ressources/wikitext.csv";
+		try {
+			FileWriter writer = new FileWriter(outputPath);
+			if(wikitable.contains("{|")){
+				wikitable = wikitable.replaceAll("\n", "");
+				String[] lignes = wikitable.split("(\\|-)");
+				for (String ligne : lignes) {
+					if (ligne.startsWith("! ")) {
+						
+						writer.write(ligne.concat("\n"));
+					}
+					else{
+						ligne = "";
+					}
+					ligne = ligne.replaceAll("\\{(.*?)\\}", "");
+				}
+			}	
+			writer.close();
+		}
+		catch (IOException e) {
+			e.getStackTrace();
+		}
+	}
 
 	/**
 	 * Verification de la presence de tableaux dans les donnees
