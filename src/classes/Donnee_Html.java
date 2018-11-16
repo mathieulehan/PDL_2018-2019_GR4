@@ -2,6 +2,7 @@ package classes;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
@@ -9,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import exceptions.ConvertionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 
@@ -23,7 +25,6 @@ public class Donnee_Html extends Donnee{
 	 * Le HTML de la page wikipedia
 	 */
 	private String html;
-	private String outputPath = "src/ressources/html.csv";
 	private int lignesEcrites = 0;
 	private int colonnesEcrites = 0;
 
@@ -34,12 +35,13 @@ public class Donnee_Html extends Donnee{
 	/**
 	 * Recupere le contenu et le modifie en CSV
 	 * @param url
-	 * @throws IOException
 	 * @throws UrlInvalideException 
 	 * @throws ExtractionInvalideException 
+	 * @throws MalformedURLException 
+	 * @throws ConvertionInvalideException 
 	 */
 	@Override
-	public void extraire(Url url) throws UrlInvalideException, IOException, ExtractionInvalideException {
+	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConvertionInvalideException {
 		if(url.estUrlValide()) {
 			String langue = url.getLangue();
 			String titre = url.getTitre();
@@ -54,23 +56,28 @@ public class Donnee_Html extends Donnee{
 
 	/**
 	 * Methode qui parcoure les tables du HTML et les convertit en CSV
-	 * @throws IOException 
+	 * @throws ConvertionInvalideException 
 	 */
-	public void htmlVersCSV() throws IOException {
-		FileWriter writer = new FileWriter(outputPath);
-		Document page = Jsoup.parseBodyFragment(html);
-		Elements lignes = page.getElementsByTag("tr");
+	public void htmlVersCSV() throws ConvertionInvalideException {
+		String outputPath = "src/ressources/html.csv";
+		try {
+			FileWriter writer = new FileWriter(outputPath);
+			Document page = Jsoup.parseBodyFragment(html);
+			Elements lignes = page.getElementsByTag("tr");
 
-		for (Element ligne : lignes) {
-			Elements cellules = ligne.getElementsByTag("td");
-			for (Element cellule : cellules) {
-				writer.write(cellule.text().concat("; "));
-				colonnesEcrites++;
+			for (Element ligne : lignes) {
+				Elements cellules = ligne.getElementsByTag("td");
+				for (Element cellule : cellules) {
+					writer.write(cellule.text().concat("; "));
+					colonnesEcrites++;
+				}
+				writer.write("\n");
+				lignesEcrites++;
 			}
-			writer.write("\n");
-			lignesEcrites++;
+			writer.close();
+		} catch (Exception e) {
+			throw new ConvertionInvalideException("Convertion HTML vers CSV incorrecte");
 		}
-		writer.close();
 
 	}
 
