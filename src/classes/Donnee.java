@@ -1,12 +1,9 @@
 package classes;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.json.JSONException;
 
 import exceptions.ConvertionInvalideException;
 import exceptions.ExtractionInvalideException;
@@ -18,7 +15,7 @@ import exceptions.UrlInvalideException;
  *
  */
 
-abstract class Donnee{
+public abstract class Donnee{
 
 	private long tempsOriginal;
 
