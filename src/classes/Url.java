@@ -13,9 +13,9 @@ import exceptions.UrlInvalideException;
  */
 public class Url {
 
-	public URL url;
-	public String titre;
-	public String langue;
+	private URL url;
+	private String titre;
+	private String langue;
 
 	public Url(URL url) {
 		this.url = url;
@@ -25,7 +25,7 @@ public class Url {
 
 	/**
 	 * Verification de la langue de la page
-	 * @return boolean
+	 * @return true si la langue est en francais ou en anglais
 	 * @throws UrlInvalideException 
 	 */
 	public boolean estLangueValide() throws UrlInvalideException {
@@ -38,7 +38,7 @@ public class Url {
 
 	/**
 	 * Verification du titre de la page
-	 * @return boolean
+	 * @return true si le titre comporte au moins un caractere
 	 * @throws MalformedURLException 
 	 */
 	public boolean estTitreValide() throws MalformedURLException {
@@ -52,7 +52,7 @@ public class Url {
 	/**
 	 * Tester une connexion avec le serveur HTTP afin de savoir si l'url renvoie bien a une page existante
 	 * ATTENTION methode lourde (en temps et en memoire)
-	 * @return boolean
+	 * @return true si la connexion HTTP est reussie 
 	 * @throws UrlInvalideException 
 	 */
 	public boolean testerConnexionHTTP() throws UrlInvalideException {
@@ -70,7 +70,7 @@ public class Url {
 
 	/**
 	 * Methode implementant les precedentes methodes
-	 * @return boolean
+	 * @return true si titre valide, langue valide et connexion reussie
 	 * @throws UrlInvalideException
 	 * @throws MalformedURLException 
 	 */
@@ -79,11 +79,19 @@ public class Url {
 	}
 
 	/**
+	 * Recuperer l'URL 
+	 * @return String url
+	 */
+	public URL getURL() {
+		return this.url;
+	}
+	
+	/**
 	 * Recuperer le titre de la page url
 	 * @return String titre
 	 */
 	public String getTitre(){
-		return this.titre;
+		return this.titre.toString();
 	}
 
 	/**
@@ -93,5 +101,4 @@ public class Url {
 	public String getLangue() {
 		return this.langue;
 	}
-
 }

@@ -4,7 +4,8 @@ package exceptions;
  * 
  * Classe creant une Exception dans differents cas d'erreur d'URL :
  * - URL d'une page inexistante
- * - URL inexistante
+ * - Connexion via l'URL echouee
+ * - Langue non geree
  * 
  * @author Charlotte
  *

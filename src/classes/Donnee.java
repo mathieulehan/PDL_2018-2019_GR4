@@ -54,8 +54,7 @@ public abstract class Donnee{
 
 	/**
 	 * Verification de la presence de tableaux
-	 * @param donnee
-	 * @return
+	 * @return boolean
 	 * @throws ExtractionInvalideException 
 	 */
 	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
@@ -69,7 +68,7 @@ public abstract class Donnee{
 
 	/**
 	 * Donne le temps du chronometre a l'instant T
-	 * @return
+	 * @return long
 	 */
 	public long getTime(){
 		return System.currentTimeMillis() - tempsOriginal;

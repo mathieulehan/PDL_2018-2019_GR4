@@ -27,8 +27,8 @@ public class Donnee_Html extends Donnee{
 	private int lignesEcrites = 0;
 	private int colonnesEcrites = 0;
 
-	public Donnee_Html(String donneeHTML) {
-		this.donneeHTML = donneeHTML;
+	public Donnee_Html() {
+		this.donneeHTML = "";
 	}
 
 	/**
@@ -44,8 +44,8 @@ public class Donnee_Html extends Donnee{
 		if(url.estUrlValide()) {
 			String langue = url.getLangue();
 			String titre = url.getTitre();
-
 			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
+			
 			donneeHTML = "" + recupContenu(page);
 			htmlVersCSV();
 		}
@@ -56,6 +56,9 @@ public class Donnee_Html extends Donnee{
 	 * @throws ConvertionInvalideException 
 	 */
 	public void htmlVersCSV() throws ConvertionInvalideException {
+		/**
+		 * CE FICHIER N'EXISTE PAS 
+		 */
 		String outputPath = "src/ressources/html.csv";
 		try {
 			FileWriter writer = new FileWriter(outputPath);

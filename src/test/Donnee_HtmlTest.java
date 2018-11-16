@@ -53,7 +53,7 @@ public class Donnee_HtmlTest {
 	@Test
 	void testTempsExec(long nbATest) throws MalformedURLException, UrlInvalideException, ExtractionInvalideException, ConvertionInvalideException {
 		Url monUrl = new Url(new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon"));
-		Donnee_Html donnees = new Donnee_Html("");
+		Donnee_Html donnees = new Donnee_Html();
 		donnees.extraire(monUrl);
 
 		assertTrue("Temps d'execution de " + nbATest/1000 + " secondes", nbATest < 24000);
