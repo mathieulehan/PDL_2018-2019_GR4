@@ -50,6 +50,10 @@ public class Donnee_Html extends Donnee{
 			Donnee_Html donneeHTML = new Donnee_Html(html);
 			donneeHTML.htmlVersCSV();
 		}
+		else {
+			UrlInvalideException urlInvalideExp = new UrlInvalideException("URL invalide");
+			throw urlInvalideExp;
+		}
 	}
 
 	/**
@@ -84,7 +88,7 @@ public class Donnee_Html extends Donnee{
 	public boolean pageComporteTableau() throws ExtractionInvalideException {
 		Document page = Jsoup.parseBodyFragment(html);
 		if(page.getElementsByTag("table") == null){
-			throw new ExtractionInvalideException("Aucun tableau présent dans la page");
+			throw new ExtractionInvalideException("Aucun tableau present dans la page");
 		}
 		return true;
 	}
