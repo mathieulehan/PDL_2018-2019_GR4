@@ -49,6 +49,10 @@ public class Donnee_Html extends Donnee{
 			donneeHTML = "" + recupContenu(page);
 			htmlVersCSV();
 		}
+		else {
+			UrlInvalideException urlInvalideExp = new UrlInvalideException("URL invalide");
+			throw urlInvalideExp;
+		}
 	}
 
 	/**

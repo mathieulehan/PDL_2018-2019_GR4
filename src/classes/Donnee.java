@@ -15,8 +15,8 @@ import exceptions.UrlInvalideException;
  *
  */
 
-public abstract class Donnee{
-
+abstract class Donnee{
+		
 	private long tempsOriginal;
 
 	/**
