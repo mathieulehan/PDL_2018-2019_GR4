@@ -10,20 +10,24 @@ import classes.Donnee_Html;
 import classes.Donnee_Wikitable;
 import classes.Donnee;
 
+/**
+ * Classe de tests unitaires JUnit, utilisant Mockito pour tester les methodes de la classe ComparerCSV 
+ * @author mathi
+ *
+ */
 public class ComparerCSVTest {
-
-	/**
-	 * Test de la fonction comparaisonTempsExecution de la classe ComparerCSV, via Mockito.
-	 */
-
+	
 	// On "mock" les classes qui vont être utilisées dans le test
 	ComparerCSV comparerCSVTest = Mockito.mock(ComparerCSV.class);
 	Donnee donneeTest = Mockito.mock(Donnee.class);
 	Donnee_Html donnee_HtmlTest = Mockito.mock(Donnee_Html.class);
 	Donnee_Wikitable donnee_WikitableTest = Mockito.mock(Donnee_Wikitable.class);
 
+	/**
+	 * Le temps d'execution du parsing du html est superieur a celui du wikitext
+	 * La methode doit renvoyer true, le parsing du html a le meilleur temps d'execution
+	 */
 	@Test
-	// TODO à finir
 	public void comparaisonTempsExecutionTest1() {
 		/* On "mock" les methodes qui vont être executees, on est donc surs que ce qu'elles vont renvoyer,
 		excepte la methode à tester.*/
@@ -35,6 +39,10 @@ public class ComparerCSVTest {
 		Assert.assertTrue(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest));
 	}
 	
+	/**
+	 * Le temps d'execution du parsing du wikitext est superieur a celui du html
+	 * La methode doit renvoyer false, le parsing du wikitext a le meilleur temps d'execution
+	 */
 	@Test
 	public void comparaisonTempsExecutionTest2() {
 		/* On "mock" les methodes qui vont etre executees, on est donc surs que ce qu'elles vont renvoyer,
