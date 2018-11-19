@@ -6,11 +6,11 @@ package exceptions;
  * @author Charlotte
  *
  */
-public class ConvertionInvalideException extends Exception{
+public class ConversionInvalideException extends Exception{
 
 	String message;
 	
-	public ConvertionInvalideException(String message) {
+	public ConversionInvalideException(String message) {
 		super();
 		this.message = message;
 	}
