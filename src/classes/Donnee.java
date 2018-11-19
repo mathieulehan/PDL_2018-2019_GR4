@@ -1,11 +1,14 @@
 package classes;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import exceptions.ConvertionInvalideException;
+import org.json.JSONException;
+
+import exceptions.ConversionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 
@@ -25,11 +28,11 @@ public abstract class Donnee{
 	 * @throws UrlInvalideException
 	 * @throws ExtractionInvalideException 
 	 * @throws MalformedURLException 
-	 * @throws ConvertionInvalideException 
+	 * @throws ConversionInvalideException 
 	 * @throws JSONException 
 	 * @throws IOException 
 	 */
-	abstract void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConvertionInvalideException, IOException, JSONException;
+	abstract void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException, IOException, JSONException;
 
 	/**
 	 * A partir de l'url donnee, recupere le contenu de la page en json

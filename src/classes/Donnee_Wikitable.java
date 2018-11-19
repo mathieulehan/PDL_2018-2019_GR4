@@ -1,6 +1,7 @@
 package classes;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -34,7 +35,7 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws MalformedURLException 
 	 */
 	@Override
-	public void extraire(Url url) throws  UrlInvalideException, ExtractionInvalideException, MalformedURLException {
+	public void extraire(Url url) throws  UrlInvalideException, ExtractionInvalideException, MalformedURLException, IOException {
 		if(url.estUrlValide()) {
 			String langue = url.getLangue();
 			String titre = url.getTitre();
