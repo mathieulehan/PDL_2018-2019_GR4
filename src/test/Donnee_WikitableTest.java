@@ -77,13 +77,24 @@ public class Donnee_WikitableTest {
 	 * @throws MalformedURLException 
 	 */
 	@Test
-	void testCreationCSV() throws ExtractionInvalideException, MalformedURLException {
-		Url monUrl = new Url(new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon"));
-		Donnee_Wikitable test = new Donnee_Wikitable();
-		
-		String contenu = test.recupContenu(monUrl.getURL());
-		String wikitable = test.jsonVersWikitable(contenu);
-		test.wikitableEnTeteVersCSV(wikitable);
+	void testCreationCSV() {
+		URL monUrl;
+		String contenu, wikitable = "";
+		try {
+			monUrl = new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon");
+			Url newUrl = new Url(monUrl);
+			Donnee_Wikitable test = new Donnee_Wikitable("");
+			try {
+				contenu = test.recupContenu(newUrl.url);
+				wikitable = test.jsonVersWikitable(contenu);
+				test.wikitableEnTeteVersCSV(wikitable);
+			} catch (ExtractionInvalideException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
