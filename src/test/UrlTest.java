@@ -20,13 +20,13 @@ public class UrlTest {
 	@Test(expected = UrlInvalideException.class)
 	public void detection_langues_non_geree() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://fy.wikipedia.org/wiki/Espagne"));
-		url.estLangueValide();
+		url.estUrlValide();
 	}
 
 	@Test(expected = MalformedURLException.class)
 	public void detection_titre_incomplet() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://fr.wikipedia.org/wiki/"));
-		url.estTitreValide();
+		url.estUrlValide();
 	}
 
 	@Test
