@@ -60,6 +60,7 @@ public class Donnee_Wikitable extends Donnee{
 			JSONObject objetJson2 = new JSONObject(docs);
 			String wikitextDocs = objetJson2.getString("wikitext");
 			JSONObject objetJson3 = new JSONObject(wikitextDocs);
+
 			
 			return objetJson3.getString("*");
 		} catch (Exception e) {
@@ -111,25 +112,30 @@ public class Donnee_Wikitable extends Donnee{
 	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
 		try {
 			FileWriter writer = new FileWriter(outputPath);
-			if(wikitable.contains("{|")){
+			if(pageComporteTableau()){
 				wikitable = wikitable.replaceAll("\n", "");
 				String[] lignes = wikitable.split("(\\|-)");
 				for (String ligne : lignes) {
-					if (ligne.startsWith("! ")) {
+					if (ligne.startsWith("!")) {
 						ligne.substring(14, ligne.length());
-						writer.write(ligne.concat("\n"));
+						writer.write("truc"/*ligne.concat("\n")*/);
 					}
 					else{
 						ligne = "";
+						writer.write("bidule");
 					}
-					ligne = ligne.replaceAll("\\{(.*?)\\}", "");
+					//ligne = ligne.replaceAll("\\{(.*?)\\}", "");
 				}
-			}	
+			}
 			writer.close();
 		}
 		catch (Exception e) {
 			throw new ExtractionInvalideException("En-tete vers CSV : extraction et convertion echouees");
 		}
+	}
+	
+	public void coucou(String wiki) {
+		System.out.println("contenu : "+ wiki);
 	}
 
 	/**

@@ -80,21 +80,23 @@ public class Donnee_WikitableTest {
 	@Test
 	void testCreationCSV() throws ExtractionInvalideException {
 		URL monUrl;
-		String contenu, wikitable = "";
+		String contenu = "", wikitable = "";
 		try {
-			monUrl = new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon");
+			monUrl = new URL("https://en.wikipedia.org/w/api.php?action=parse&page=Wikipedia:Unusual_articles/Places_and_infrastructure&prop=wikitext&format=json");
 			Url newUrl = new Url(monUrl);
 			Donnee_Wikitable test = new Donnee_Wikitable();
 			try {
-			contenu = test.recupContenu(newUrl.url);
+				contenu = test.recupContenu(newUrl.getURL());
+				System.out.println("contenu : "+contenu);
 			} catch (JSONException e) {
-				wikitable = test.jsonVersWikitable(contenu);
-			} catch (ExtractionInvalideException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			try {
+				wikitable = test.jsonVersWikitable(contenu);
+			}catch(ExtractionInvalideException e) {
+				e.printStackTrace();
+			}
+			
 			test.wikitableEnTeteVersCSV(wikitable);
 			
 		} catch (MalformedURLException e) {
