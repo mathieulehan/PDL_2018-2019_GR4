@@ -1,40 +1,14 @@
 package test;
 
-<<<<<<< HEAD
-import static org.junit.Assert.*;
-
-import org.junit.jupiter.api.Test;
-
-import classes.Donnee_Html;
-import classes.Url;
-import exceptions.ConvertionInvalideException;
-import exceptions.ExtractionInvalideException;
-import exceptions.UrlInvalideException;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import static org.mockito.Mockito.*;
-
-public class Donnee_HtmlTest {
-
-=======
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import java.net.URL;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import classes.ComparerCSV;
 import classes.Donnee;
 import classes.Donnee_Html;
-import classes.Donnee_Wikitable;
 import classes.Url;
 import exceptions.UrlInvalideException;
 
@@ -45,7 +19,6 @@ public class Donnee_HtmlTest {
 	Donnee_Html donnee_HtmlTest = Mockito.mock(Donnee_Html.class);
 	Url urlTest = Mockito.mock(Url.class);
 	
->>>>>>> V1
 	/**
 	 * Renvoie un message dans le cas ou l URL est fausse
 	 */
@@ -56,7 +29,7 @@ public class Donnee_HtmlTest {
 			testExtractPageNonExistante.extractWikiTable("en", "render", "erreurPage");
 	    });*/
 	}
-
+	
 	/**
 	 * Renvoie un message dans le cas ou la langue choisie est erronee
 	 */
@@ -67,7 +40,7 @@ public class Donnee_HtmlTest {
 			testErreurLangue.extractWikiTable("erreurLangue", "render", "Wikipedia:Unusual_articles/Places_and_infrastructure");
 	    });*/
 	}
-
+	
 	/**
 	 * Test ou l'url est valide
 	 * Aucune exception ne doit donc etre generee
@@ -100,23 +73,10 @@ public class Donnee_HtmlTest {
 	/**
 	 * Renvoie un message si le temps d execution depasse un temps maximal
 	 * @param nbATest
-	 * @throws MalformedURLException 
-	 * @throws ConvertionInvalideException 
-	 * @throws ExtractionInvalideException 
-	 * @throws UrlInvalideException 
 	 */
 	@Test
-	void testTempsExec(long nbATest) throws MalformedURLException, UrlInvalideException, ExtractionInvalideException, ConvertionInvalideException {
-		Url monUrl = new Url(new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon"));
-		Donnee_Html donnees = new Donnee_Html();
-		donnees.extraire(monUrl);
-
+	void testTempsExec(long nbATest) {
 		assertTrue("Temps d'execution de " + nbATest/1000 + " secondes", nbATest < 24000);
 	}
-<<<<<<< HEAD
-
-
-=======
 	
->>>>>>> V1
 }
