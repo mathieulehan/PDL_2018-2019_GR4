@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import exceptions.ConvertionInvalideException;
+import exceptions.ConversionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 
@@ -37,10 +37,10 @@ public class Donnee_Html extends Donnee{
 	 * @throws UrlInvalideException 
 	 * @throws ExtractionInvalideException 
 	 * @throws MalformedURLException 
-	 * @throws ConvertionInvalideException 
+	 * @throws ConversionInvalideException 
 	 */
 	@Override
-	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConvertionInvalideException {
+	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException {
 		if(url.estUrlValide()) {
 			String langue = url.getLangue();
 			String titre = url.getTitre();
@@ -49,20 +49,13 @@ public class Donnee_Html extends Donnee{
 			donneeHTML = "" + recupContenu(page);
 			htmlVersCSV();
 		}
-		else {
-			UrlInvalideException urlInvalideExp = new UrlInvalideException("URL invalide");
-			throw urlInvalideExp;
-		}
 	}
 
 	/**
 	 * Methode qui parcoure les tables du HTML et les convertit en CSV
-	 * @throws ConvertionInvalideException 
+	 * @throws ConversionInvalideException
 	 */
-	public void htmlVersCSV() throws ConvertionInvalideException {
-		/**
-		 * CE FICHIER N'EXISTE PAS 
-		 */
+	public void htmlVersCSV() throws ConversionInvalideException {
 		String outputPath = "src/ressources/html.csv";
 		try {
 			FileWriter writer = new FileWriter(outputPath);
@@ -80,7 +73,7 @@ public class Donnee_Html extends Donnee{
 			}
 			writer.close();
 		} catch (Exception e) {
-			throw new ConvertionInvalideException("Convertion HTML vers CSV incorrecte");
+			throw new ConversionInvalideException("Convertion HTML vers CSV incorrecte");
 		}
 
 	}
