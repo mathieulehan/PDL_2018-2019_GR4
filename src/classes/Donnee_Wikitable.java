@@ -1,10 +1,9 @@
 package classes;
 
 import java.io.FileWriter;
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import exceptions.ExtractionInvalideException;
@@ -21,64 +20,61 @@ public class Donnee_Wikitable extends Donnee{
 	private String wikitable;
 	private int lignesEcrites = 0;
 	private int colonnesEcrites = 0;
+	private String outputPath = "src/ressources/wikitext.csv";
 
-	public Donnee_Wikitable(String wikitable){
-		this.wikitable = wikitable;
+	public Donnee_Wikitable(){
+		this.wikitable = "";
 	}
 
 	/**
 	 * Recupere les donnees en JSON pour les mettre dans un CSV
 	 * @param url
-	 * @throws IOException
 	 * @throws UrlInvalideException 
-	 * @throws JSONException 
 	 * @throws ExtractionInvalideException 
+	 * @throws MalformedURLException 
 	 */
 	@Override
-	public void extraire(Url url) throws IOException, UrlInvalideException, ExtractionInvalideException, JSONException {
+	public void extraire(Url url) throws  UrlInvalideException, ExtractionInvalideException, MalformedURLException {
 		if(url.estUrlValide()) {
 			String langue = url.getLangue();
 			String titre = url.getTitre();
 
 			URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
 			String json = recupContenu(page);
-
-			Donnee_Wikitable parserWikitext = new Donnee_Wikitable(json);
-			wikitable = parserWikitext.jsonVersWikitable(json);
-			parserWikitext.wikitableVersCSV(wikitable);
+			wikitable = jsonVersWikitable(json);
+			wikitableVersCSV();
 		}
 	}
 
 	/**
 	 * Recupere le wikitext dans le JSON
 	 * @param json
-	 * @return
+	 * @return String
 	 * @throws ExtractionInvalideException 
-	 * @throws JSONException 
 	 */
-	public String jsonVersWikitable(String json) throws ExtractionInvalideException, JSONException {
-		String content = "";
-		JSONObject objetJson = new JSONObject(json);
-		String docs = objetJson.getString("parse");
-		JSONObject objetJson2 = new JSONObject(docs);
-		String wikitext = objetJson2.getString("wikitext");
-		JSONObject objetJson3 = new JSONObject(wikitext);
-		content = objetJson3.getString("*");
-		if (content == "" ) {
-			throw new ExtractionInvalideException("JSON vide");
+	public String jsonVersWikitable(String json) throws ExtractionInvalideException {
+		try {
+			JSONObject objetJson = new JSONObject(json);
+			String docs = objetJson.getString("parse");
+			JSONObject objetJson2 = new JSONObject(docs);
+			String wikitextDocs = objetJson2.getString("wikitext");
+			JSONObject objetJson3 = new JSONObject(wikitextDocs);
+			
+			return objetJson3.getString("*");
+		} catch (Exception e) {
+			throw new ExtractionInvalideException("Extraction JSON vers Wikitext echouee");
 		}
-		return content;
 	}
 
 	/**
-	 * Parcoure le JSON, extrait les tableaux et les convertis en CSV
+	 * Parcours le JSON, extrait les tableaux et les convertis en CSV
 	 * @param wikitable
+	 * @throws ExtractionInvalideException 
 	 */
-	public void wikitableVersCSV(String wikitable) {
-		String outputPath = "src/ressources/wikitext.csv";
+	public void wikitableVersCSV() throws ExtractionInvalideException {
 		try {
 			FileWriter writer = new FileWriter(outputPath);
-			if(wikitable.contains("|-")){
+			if(pageComporteTableau()){
 				wikitable = wikitable.replaceAll("\n", "");
 				String[] lignes = wikitable.split("\\|-");
 				for (String ligne : lignes) {
@@ -88,7 +84,7 @@ public class Donnee_Wikitable extends Donnee{
 						colonnesEcrites++;
 						ligne = ligne.replaceAll("(\\{\\{convert\\|)|(\\||adj=\\w+}})|(\\[\\[)|(\\w+]])", "");
 						ligne = ligne.replaceAll("\\{(.*?)\\}", "");
-						//						ligne = ligne.replaceAll( "([^;&\\W&])+" , "");
+						// ligne = ligne.replaceAll( "([^;&\\W&])+" , "");
 						ligne = ligne.replaceAll(" (]]''')|( ''')", "");
 						writer.write(ligne.concat("\n"));
 						lignesEcrites++;
@@ -101,13 +97,17 @@ public class Donnee_Wikitable extends Donnee{
 			}	
 			writer.close();
 		}
-		catch (IOException e) {
-			e.getStackTrace();
+		catch (Exception e) {
+			throw new ExtractionInvalideException("Wikitext vers CSV : extraction et convertion echouees");
 		}
 	}
-	
-	public void wikitableEnTeteVersCSV(String wikitable) {
-		String outputPath = "src/ressources/wikitext.csv";
+
+	/**
+	 * 
+	 * @param wikitable
+	 * @throws ExtractionInvalideException
+	 */
+	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
 		try {
 			FileWriter writer = new FileWriter(outputPath);
 			if(wikitable.contains("{|")){
@@ -126,8 +126,8 @@ public class Donnee_Wikitable extends Donnee{
 			}	
 			writer.close();
 		}
-		catch (IOException e) {
-			e.getStackTrace();
+		catch (Exception e) {
+			throw new ExtractionInvalideException("En-tete vers CSV : extraction et convertion echouees");
 		}
 	}
 
@@ -139,7 +139,7 @@ public class Donnee_Wikitable extends Donnee{
 	@Override
 	boolean pageComporteTableau() throws ExtractionInvalideException {
 		if(!wikitable.contains("|-")){
-			throw new ExtractionInvalideException("Aucun tableau présent dans la page");
+			throw new ExtractionInvalideException("Aucun tableau present dans la page");
 		}
 		return true;
 	}

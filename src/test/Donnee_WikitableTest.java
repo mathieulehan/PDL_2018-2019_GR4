@@ -1,6 +1,5 @@
 package test;
 
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
 import classes.Donnee_Wikitable;
@@ -9,13 +8,11 @@ import exceptions.ExtractionInvalideException;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 
 public class Donnee_WikitableTest {
-	
+
 	/**
 	 * Renvoie un message dans le cas ou l URL est fausse
 	 */
@@ -26,7 +23,7 @@ public class Donnee_WikitableTest {
 			testExtractPageNonExistante.extractWikiTable("en", "render", "erreurPage");
 	    });*/
 	}
-	
+
 	/**
 	 * Renvoie un message dans le cas ou la langue choisie est erronee
 	 */
@@ -37,7 +34,7 @@ public class Donnee_WikitableTest {
 			testErreurLangue.extractWikiTable("erreurLangue", "render", "Wikipedia:Unusual_articles/Places_and_infrastructure");
 	    });*/
 	}
-	
+
 	/**
 	 * Renvoie un message si le temps d execution depasse un temps maximal
 	 * @param nbATest
@@ -46,7 +43,7 @@ public class Donnee_WikitableTest {
 	void testTempsExec(long nbATest) {
 		assertTrue("Temps d'execution de " + nbATest/1000 + " secondes", nbATest < 24000);
 	}
-	
+
 	/**
 	 * Compare le nombre de tableaux recuperes en HTML et en Wikitext
 	 * @param nbATester
@@ -57,7 +54,7 @@ public class Donnee_WikitableTest {
 		int diff = nbRef - nbATester;
 		assertTrue("Nombre de tableaux different : " + diff, diff == 0);
 	}
-	
+
 	/**
 	 * Renvoie le nombre de cellule comportant des differences entre recuperation HTML et Wikitext dans celles testees
 	 * @param cellulesATest
@@ -73,40 +70,20 @@ public class Donnee_WikitableTest {
 		}
 		assertTrue("Nombre de cellules differentes", diff == 0);
 	}
-	
+
 	/**
 	 * Test tout a la wanaghen, en gros c est un main dans les tests
+	 * @throws ExtractionInvalideException 
+	 * @throws MalformedURLException 
 	 */
 	@Test
-	void testCreationCSV() {
-		URL monUrl;
-		String contenu, wikitable = "";
-		try {
-			monUrl = new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon");
-			Url newUrl = new Url(monUrl);
-			Donnee_Wikitable test = new Donnee_Wikitable("");
-			try {
-				contenu = test.recupContenu(newUrl.url);
-				try {
-					wikitable = test.jsonVersWikitable(contenu);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ExtractionInvalideException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				test.wikitableEnTeteVersCSV(wikitable);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+	void testCreationCSV() throws ExtractionInvalideException, MalformedURLException {
+		Url monUrl = new Url(new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon"));
+		Donnee_Wikitable test = new Donnee_Wikitable();
+		
+		String contenu = test.recupContenu(monUrl.getURL());
+		String wikitable = test.jsonVersWikitable(contenu);
+		test.wikitableEnTeteVersCSV(wikitable);
 	}
-	
-	
 
 }

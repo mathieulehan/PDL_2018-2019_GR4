@@ -1,12 +1,9 @@
 package classes;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.json.JSONException;
 
 import exceptions.ConvertionInvalideException;
 import exceptions.ExtractionInvalideException;
@@ -19,7 +16,7 @@ import exceptions.UrlInvalideException;
  */
 
 abstract class Donnee{
-
+		
 	private long tempsOriginal;
 
 	/**
@@ -57,8 +54,7 @@ abstract class Donnee{
 
 	/**
 	 * Verification de la presence de tableaux
-	 * @param donnee
-	 * @return
+	 * @return boolean
 	 * @throws ExtractionInvalideException 
 	 */
 	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
@@ -72,7 +68,7 @@ abstract class Donnee{
 
 	/**
 	 * Donne le temps du chronometre a l'instant T
-	 * @return
+	 * @return long
 	 */
 	public long getTime(){
 		return System.currentTimeMillis() - tempsOriginal;

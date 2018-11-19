@@ -1,7 +1,6 @@
 package classes;
 
 import java.io.FileWriter;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -24,12 +23,12 @@ public class Donnee_Html extends Donnee{
 	/**
 	 * Le HTML de la page wikipedia
 	 */
-	private String html;
+	private String donneeHTML;
 	private int lignesEcrites = 0;
 	private int colonnesEcrites = 0;
 
-	public Donnee_Html(String html) {
-		this.html = html;
+	public Donnee_Html() {
+		this.donneeHTML = "";
 	}
 
 	/**
@@ -45,12 +44,14 @@ public class Donnee_Html extends Donnee{
 		if(url.estUrlValide()) {
 			String langue = url.getLangue();
 			String titre = url.getTitre();
-
 			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			html = "" + recupContenu(page);
-
-			Donnee_Html donneeHTML = new Donnee_Html(html);
-			donneeHTML.htmlVersCSV();
+			
+			donneeHTML = "" + recupContenu(page);
+			htmlVersCSV();
+		}
+		else {
+			UrlInvalideException urlInvalideExp = new UrlInvalideException("URL invalide");
+			throw urlInvalideExp;
 		}
 	}
 
@@ -59,10 +60,13 @@ public class Donnee_Html extends Donnee{
 	 * @throws ConvertionInvalideException 
 	 */
 	public void htmlVersCSV() throws ConvertionInvalideException {
+		/**
+		 * CE FICHIER N'EXISTE PAS 
+		 */
 		String outputPath = "src/ressources/html.csv";
 		try {
 			FileWriter writer = new FileWriter(outputPath);
-			Document page = Jsoup.parseBodyFragment(html);
+			Document page = Jsoup.parseBodyFragment(donneeHTML);
 			Elements lignes = page.getElementsByTag("tr");
 
 			for (Element ligne : lignes) {
@@ -88,9 +92,9 @@ public class Donnee_Html extends Donnee{
 	 */
 	@Override
 	public boolean pageComporteTableau() throws ExtractionInvalideException {
-		Document page = Jsoup.parseBodyFragment(html);
+		Document page = Jsoup.parseBodyFragment(donneeHTML);
 		if(page.getElementsByTag("table") == null){
-			throw new ExtractionInvalideException("Aucun tableau présent dans la page");
+			throw new ExtractionInvalideException("Aucun tableau present dans la page");
 		}
 		return true;
 	}
