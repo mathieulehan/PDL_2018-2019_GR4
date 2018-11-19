@@ -86,8 +86,7 @@ public class Donnee_WikitableTest {
 			Url newUrl = new Url(monUrl);
 			Donnee_Wikitable test = new Donnee_Wikitable();
 			try {
-			contenu = test.recupContenu(newUrl.url);
-			} catch (JSONException e) {
+				contenu = test.recupContenu(newUrl.getURL());
 				wikitable = test.jsonVersWikitable(contenu);
 			} catch (ExtractionInvalideException e) {
 				// TODO Auto-generated catch block
