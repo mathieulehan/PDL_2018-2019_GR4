@@ -2,15 +2,17 @@ package test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import classes.Donnee;
 import classes.Donnee_Html;
 import classes.Url;
+import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 
 public class Donnee_HtmlTest {
@@ -31,16 +33,23 @@ public class Donnee_HtmlTest {
 	    });*/
 	}
 	
-	/**
-	 * Renvoie un message dans le cas ou la langue choisie est erronee
-	 */
 	@Test
-	public void erreurLangue() {
-		/*ExtractWikitable testErreurLangue = new ExtractWikitable();
-		assertThrows(UnknownHostException.class,() -> {
-			testErreurLangue.extractWikiTable("erreurLangue", "render", "Wikipedia:Unusual_articles/Places_and_infrastructure");
-	    });*/
+	public void page_comporte_tableau() throws ExtractionInvalideException {
+		Document docTest = Mockito.mock(Document.class);
+		Elements eleTest = Mockito.mock(Elements.class); // objet mock donc null !!!
+		Mockito.when(docTest.getElementsByTag("table")).thenReturn(eleTest);
+		
+		//Mockito.when(donnee_HtmlTest.pageComporteTableau()).thenCallRealMethod();
+		assertTrue(donnee_HtmlTest.pageComporteTableau());
 	}
+	
+	@Test(expected = ExtractionInvalideException.class)
+	public void page_ne_comporte_pas_tableau() throws ExtractionInvalideException {
+		Document docTest = Mockito.mock(Document.class);
+		Mockito.when(docTest.getElementsByTag("table")).thenReturn(null);
+		donnee_HtmlTest.pageComporteTableau();
+	}
+	
 	
 	/**
 	 * Test ou l'url est valide
@@ -50,9 +59,9 @@ public class Donnee_HtmlTest {
 	 * @throws MalformedURLException 
 	 */
 	@Test
-	public void extraireTest1() throws UrlInvalideException, MalformedURLException {
+	public void url_valide() throws UrlInvalideException, MalformedURLException {
 		Mockito.when(urlTest.estUrlValide()).thenReturn(true);
-		// TODO assert ne throw pas d'exception
+		urlTest.estUrlValide();
 	}
 	
 	/**
@@ -63,8 +72,9 @@ public class Donnee_HtmlTest {
 	 * @throws MalformedURLException 
 	 */
 	@Test(expected = UrlInvalideException.class)
-	public void extraireTest2() throws UrlInvalideException, MalformedURLException {
+	public void url_invalide() throws UrlInvalideException, MalformedURLException {
 		Mockito.when(urlTest.estUrlValide()).thenReturn(false);
+		urlTest.estUrlValide();
 	}
 	
 	/**
