@@ -26,8 +26,10 @@ public abstract class Donnee{
 	 * @throws ExtractionInvalideException 
 	 * @throws MalformedURLException 
 	 * @throws ConvertionInvalideException 
+	 * @throws JSONException 
+	 * @throws IOException 
 	 */
-	abstract void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConvertionInvalideException;
+	abstract void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConvertionInvalideException, IOException, JSONException;
 
 	/**
 	 * A partir de l'url donnee, recupere le contenu de la page en json

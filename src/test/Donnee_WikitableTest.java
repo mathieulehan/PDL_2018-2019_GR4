@@ -1,5 +1,6 @@
 package test;
 
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
 import classes.Donnee_Wikitable;
@@ -77,21 +78,25 @@ public class Donnee_WikitableTest {
 	 * @throws MalformedURLException 
 	 */
 	@Test
-	void testCreationCSV() {
+	void testCreationCSV() throws ExtractionInvalideException {
 		URL monUrl;
 		String contenu, wikitable = "";
 		try {
 			monUrl = new URL("https://fr.wikipedia.org/wiki/Kevin_Bacon");
 			Url newUrl = new Url(monUrl);
-			Donnee_Wikitable test = new Donnee_Wikitable("");
+			Donnee_Wikitable test = new Donnee_Wikitable();
 			try {
-				contenu = test.recupContenu(newUrl.url);
+			contenu = test.recupContenu(newUrl.url);
+			} catch (JSONException e) {
 				wikitable = test.jsonVersWikitable(contenu);
-				test.wikitableEnTeteVersCSV(wikitable);
 			} catch (ExtractionInvalideException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			test.wikitableEnTeteVersCSV(wikitable);
+			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}

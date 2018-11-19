@@ -13,7 +13,7 @@ import exceptions.UrlInvalideException;
  */
 public class Url {
 
-	private URL url;
+	public URL url;
 	private String titre;
 	private String langue;
 
