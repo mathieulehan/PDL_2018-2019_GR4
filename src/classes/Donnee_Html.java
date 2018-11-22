@@ -107,7 +107,7 @@ public class Donnee_Html extends Donnee{
 	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	public boolean pageComporteTableau() throws ExtractionInvalideException {
+	public boolean pageComporteTableau(String html) throws ExtractionInvalideException {
 		Document page = Jsoup.parseBodyFragment(donneeHTML);
 		if(page.getElementsByTag("table") == null){
 			throw new ExtractionInvalideException("Aucun tableau present dans la page");

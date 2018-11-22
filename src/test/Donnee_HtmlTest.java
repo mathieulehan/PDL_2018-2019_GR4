@@ -40,14 +40,14 @@ public class Donnee_HtmlTest {
 		Mockito.when(docTest.getElementsByTag("table")).thenReturn(eleTest);
 		
 		//Mockito.when(donnee_HtmlTest.pageComporteTableau()).thenCallRealMethod();
-		assertTrue(donnee_HtmlTest.pageComporteTableau());
+		assertTrue(donnee_HtmlTest.pageComporteTableau(""));
 	}
 	
 	@Test(expected = ExtractionInvalideException.class)
 	public void page_ne_comporte_pas_tableau() throws ExtractionInvalideException {
 		Document docTest = Mockito.mock(Document.class);
 		Mockito.when(docTest.getElementsByTag("table")).thenReturn(null);
-		donnee_HtmlTest.pageComporteTableau();
+		donnee_HtmlTest.pageComporteTableau("");
 	}
 	
 	

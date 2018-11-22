@@ -1,9 +1,12 @@
 package classes;
 
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import org.json.JSONObject;
 
@@ -73,7 +76,7 @@ public class Donnee_Wikitable extends Donnee{
 	public void wikitableVersCSV() throws ExtractionInvalideException {
 		try {
 			FileWriter writer = new FileWriter(outputPath);
-			if(pageComporteTableau()){
+			if(pageComporteTableau(wikitable)){
 				wikitable = wikitable.replaceAll("\n", "");
 				String[] lignes = wikitable.split("\\|-");
 				for (String ligne : lignes) {
@@ -108,25 +111,28 @@ public class Donnee_Wikitable extends Donnee{
 	 */
 	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
 		try {
-			FileWriter writer = new FileWriter(outputPath);
-			//if(pageComporteTableau()){
+			FileOutputStream fileStream = new FileOutputStream(outputPath);
+			OutputStreamWriter writer = new OutputStreamWriter(fileStream, "UTF-8");
+			if(pageComporteTableau(wikitable)){
 				wikitable = wikitable.replaceAll("\n", "");
 				String[] lignes = wikitable.split("(\\|-)");
-				wikitable = wikitable.replaceAll(" align=\"center\" ", "");
+				wikitable = wikitable.replaceAll("align=\"center\" ", "");
 				for (String ligne : lignes) {
-					System.out.println(ligne);
-					if (ligne.startsWith("!")) {
-						
-						ligne.substring(14, ligne.length());
-						writer.write(ligne.concat(";"));
+					if (ligne.contains("!")) {
+						String[] entetes = ligne.split("!");
+						for (String entete : entetes) {
+							System.out.println(entete);
+							if(entete.startsWith(" scope=col |")) {
+								entete = entete.replaceAll(" scope=col \\|", "");
+								writer.write(entete.concat(";"));
+							}
+						}
 					}
 					else{
 						ligne = "";
-						writer.write("bidule");
 					}
-					//ligne = ligne.replaceAll("\\{(.*?)\\}", "");
 				}
-			//}
+			}
 			writer.close();
 		}
 		catch (Exception e) {
@@ -140,8 +146,8 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	boolean pageComporteTableau() throws ExtractionInvalideException {
-		if(!wikitable.contains("|-")){
+	boolean pageComporteTableau(String wikitable) throws ExtractionInvalideException {
+		if(!wikitable.contains("{|")){
 			throw new ExtractionInvalideException("Aucun tableau present dans la page");
 		}
 		return true;

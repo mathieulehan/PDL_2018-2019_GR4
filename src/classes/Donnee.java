@@ -62,7 +62,7 @@ public abstract class Donnee{
 	 * @return boolean
 	 * @throws ExtractionInvalideException 
 	 */
-	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
+	abstract boolean pageComporteTableau(String donnee) throws ExtractionInvalideException;
 
 	/**
 	 * Demarre le chronometre en back
