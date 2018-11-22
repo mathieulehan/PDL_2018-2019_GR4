@@ -28,7 +28,7 @@ public class Url {
 	 * @return true si la langue est en francais ou en anglais
 	 * @throws UrlInvalideException 
 	 */
-	private boolean estLangueValide() throws UrlInvalideException {
+	public boolean estLangueValide() throws UrlInvalideException {
 		langue = url.toString().substring(8, url.toString().indexOf('.'));
 		if (!langue.matches("fr|en")) {
 			throw new UrlInvalideException("Langue invalide");
@@ -41,7 +41,7 @@ public class Url {
 	 * @return true si le titre comporte au moins un caractere
 	 * @throws MalformedURLException 
 	 */
-	private boolean estTitreValide() throws MalformedURLException {
+	public boolean estTitreValide() throws MalformedURLException {
 		titre = url.toString().substring(url.toString().lastIndexOf('/')+1);
 		if (!titre.matches("^[\\w]+$")) {
 			throw new MalformedURLException("Titre de la page invalide");
