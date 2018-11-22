@@ -1,6 +1,10 @@
 package test;
 
 import static org.junit.Assert.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.junit.Test;
@@ -46,6 +50,21 @@ public class UrlTest {
 	public void detection_titre_langue_incomplet() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://.wikipedia.org/wiki/"));
 		url.estUrlValide();
+	}
+	
+	@Test
+	public void verification_336_urls() throws UrlInvalideException, IOException   {
+		String BASE_WIKIPEDIA_URL = "src/ressources/url_file.txt";
+		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
+	    String url;
+	    int nurl = 0;
+	    while ((url = br.readLine()) != null) {
+	    	Url WikiUrl = new Url(new URL(url));
+		    WikiUrl.estUrlValide();
+		    nurl++;
+	    }
+	    br.close();
+	    assertEquals(nurl, 336);
 	}
 
 }

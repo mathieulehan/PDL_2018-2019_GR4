@@ -43,7 +43,8 @@ public class Url {
 	 */
 	private boolean estTitreValide() throws MalformedURLException {
 		titre = url.toString().substring(url.toString().lastIndexOf('/')+1);
-		if (!titre.matches("^[\\w]+$")) {
+		// "\p{Graph}" -> chiffre, lettre, ponctuation
+		if (!titre.matches("^[\\p{Graph}å\\–]+$")) {
 			throw new MalformedURLException("Titre de la page invalide");
 		}
 		return true;
