@@ -7,7 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.json.JSONException;
-import exceptions.ConvertionInvalideException;
+
+import exceptions.ConversionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 

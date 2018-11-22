@@ -55,12 +55,9 @@ public class Donnee_Wikitable extends Donnee{
 	 */
 	public String jsonVersWikitable(String json) throws ExtractionInvalideException {
 		try {
-			JSONObject objetJson = new JSONObject(json);
-			String docs = objetJson.getString("parse");
-			JSONObject objetJson2 = new JSONObject(docs);
-			String wikitextDocs = objetJson2.getString("wikitext");
-			JSONObject objetJson3 = new JSONObject(wikitextDocs);
-
+			JSONObject objetJson1 = new JSONObject(json);
+			JSONObject objetJson2 = (JSONObject) objetJson1.get("parse");
+			JSONObject objetJson3 = (JSONObject) objetJson2.get("wikitext");
 			
 			return objetJson3.getString("*");
 		} catch (Exception e) {
@@ -112,13 +109,16 @@ public class Donnee_Wikitable extends Donnee{
 	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
 		try {
 			FileWriter writer = new FileWriter(outputPath);
-			if(pageComporteTableau()){
+			//if(pageComporteTableau()){
 				wikitable = wikitable.replaceAll("\n", "");
 				String[] lignes = wikitable.split("(\\|-)");
+				wikitable = wikitable.replaceAll(" align=\"center\" ", "");
 				for (String ligne : lignes) {
+					System.out.println(ligne);
 					if (ligne.startsWith("!")) {
+						
 						ligne.substring(14, ligne.length());
-						writer.write("truc"/*ligne.concat("\n")*/);
+						writer.write(ligne.concat(";"));
 					}
 					else{
 						ligne = "";
@@ -126,16 +126,12 @@ public class Donnee_Wikitable extends Donnee{
 					}
 					//ligne = ligne.replaceAll("\\{(.*?)\\}", "");
 				}
-			}
+			//}
 			writer.close();
 		}
 		catch (Exception e) {
 			throw new ExtractionInvalideException("En-tete vers CSV : extraction et convertion echouees");
 		}
-	}
-	
-	public void coucou(String wiki) {
-		System.out.println("contenu : "+ wiki);
 	}
 
 	/**
