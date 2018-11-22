@@ -1,6 +1,8 @@
 package classes;
 
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -32,7 +34,7 @@ public class Donnee_Html extends Donnee{
 	}
 
 	/**
-	 * Recupere le contenu et le modifie en CSV
+	 * Recupere le contenu et l'insere dans un CSV
 	 * @param url
 	 * @throws UrlInvalideException 
 	 * @throws ExtractionInvalideException 
@@ -42,12 +44,33 @@ public class Donnee_Html extends Donnee{
 	@Override
 	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException {
 		if(url.estUrlValide()) {
+			start();
 			String langue = url.getLangue();
 			String titre = url.getTitre();
 			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			
+			String titreSain = titre.replaceAll("/|\\|?|:|*|<|>|\\||\"", "");
 			donneeHTML = "" + recupContenu(page);
-			htmlVersCSV();
+			htmlVersCSV(titreSain);
+		}
+	}
+	
+	/**
+	 * Meme fonction que extraire, mais avec une liste en entree, prevision du "concours"
+	 * @param listUrl
+	 * @throws UrlInvalideException
+	 * @throws ExtractionInvalideException
+	 * @throws MalformedURLException
+	 * @throws ConversionInvalideException
+	 */
+	public void extraireList(Url[] listUrl) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException {
+		for (int i = 0; i < listUrl.length; i++) {
+			start();
+			String langue = listUrl[i].getLangue();
+			String titre = listUrl[i].getTitre();
+			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
+			String titreSain = titre.replaceAll("/|\\|?|:|*|<|>|\\||\"", "");
+			donneeHTML = "" + recupContenu(page);
+			htmlVersCSV(titreSain);
 		}
 	}
 
@@ -55,10 +78,11 @@ public class Donnee_Html extends Donnee{
 	 * Methode qui parcoure les tables du HTML et les convertit en CSV
 	 * @throws ConversionInvalideException
 	 */
-	public void htmlVersCSV() throws ConversionInvalideException {
-		String outputPath = "src/ressources/html.csv";
+	public void htmlVersCSV(String titre) throws ConversionInvalideException {
+		String outputPath = "src/ressources/" + titre + ".csv";
 		try {
-			FileWriter writer = new FileWriter(outputPath);
+			FileOutputStream outputStream = new FileOutputStream(outputPath);
+			OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
 			Document page = Jsoup.parseBodyFragment(donneeHTML);
 			Elements lignes = page.getElementsByTag("tr");
 
@@ -75,7 +99,6 @@ public class Donnee_Html extends Donnee{
 		} catch (Exception e) {
 			throw new ConversionInvalideException("Convertion HTML vers CSV incorrecte");
 		}
-
 	}
 
 	/**
