@@ -115,22 +115,35 @@ public class Donnee_Wikitable extends Donnee{
 			OutputStreamWriter writer = new OutputStreamWriter(fileStream, "UTF-8");
 			if(pageComporteTableau(wikitable)){
 				wikitable = wikitable.replaceAll("\n", "");
+				wikitable = wikitable.replaceAll(" align=\"center\"", "");
 				String[] lignes = wikitable.split("(\\|-)");
-				wikitable = wikitable.replaceAll("align=\"center\" ", "");
+				System.out.println(wikitable);
 				for (String ligne : lignes) {
+					if(ligne.startsWith("!")){
+						System.out.println(ligne);
+						writer.write(ligne.concat(";"));
+					}
 					if (ligne.contains("!")) {
 						String[] entetes = ligne.split("!");
 						for (String entete : entetes) {
-							System.out.println(entete);
 							if(entete.startsWith(" scope=col |")) {
 								entete = entete.replaceAll(" scope=col \\|", "");
+								System.out.println(entete);
 								writer.write(entete.concat(";"));
 							}
+							
 						}
 					}
-					else{
-						ligne = "";
+					if(ligne.startsWith("| ") || ligne.startsWith(" |") || ligne.startsWith(" | ")) {
+						ligne = ligne.replaceAll("(\\|\\|)", ";");
+						System.out.println(ligne);
+						writer.write(ligne.concat(";"));
 					}
+					if(ligne.startsWith("|}")) {
+						ligne = "";
+						writer.write(ligne.concat("\n"));
+					}
+					writer.write("\n");
 				}
 			}
 			writer.close();
