@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import classes.exceptions.ArticleInexistantException;
 import exceptions.ConversionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
@@ -40,10 +41,11 @@ public class Donnee_Html extends Donnee{
 	 * @throws ExtractionInvalideException 
 	 * @throws MalformedURLException 
 	 * @throws ConversionInvalideException 
+	 * @throws ArticleInexistantException 
 	 */
 	@Override
-	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException {
-		if(url.estUrlValide()) {
+	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException, ArticleInexistantException {
+		if(url.estUrlValide() && (contientUnArticle(url.getURL()))) {
 			start();
 			String langue = url.getLangue();
 			String titre = url.getTitre();

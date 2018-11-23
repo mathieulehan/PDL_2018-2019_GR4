@@ -2,12 +2,14 @@ package test;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import classes.Donnee_Wikitable;
 import classes.Url;
 import exceptions.ExtractionInvalideException;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -104,4 +106,20 @@ public class Donnee_WikitableTest {
 		}
 	}
 
+	/**
+	 * Si la page ne comporte pas de tableau, 
+	 * on genere une {@link ExtractionInvalideException}
+	 * On assert l'exception avec JUnit 5 comme ci-dessous
+	 * (on utilise une lambda expression de Java 8)
+	 */
+//	@Test
+//	void pasDeTableau() {
+//		Donnee_Wikitable donneeWikitableTest = Mockito.mock(Donnee_Wikitable.class);
+//		Mockito.when(donneeWikitableTest.wikitable.contains())
+//	    assertThrows(NullPointerException.class,
+//	            ()->{
+//	            // on met ici ce qui doit renvoyer une exception
+//	            donneeWikitableTest.pageComporteTableau();
+//	            });
+//	}
 }

@@ -66,5 +66,22 @@ public class UrlTest {
 	    br.close();
 	    assertEquals(nurl, 336);
 	}
+	
+	@Test
+	public void tester_connexion_336_urls() throws UrlInvalideException, IOException   {
+		String BASE_WIKIPEDIA_URL = "src/ressources/url_file.txt";
+		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
+	    String url;
+	    int nurl = 0;
+	    while ((url = br.readLine()) != null) {
+	    	Url WikiUrl = new Url(new URL(url));
+	    	if (!WikiUrl.testerConnexionHTTP()) {
+	    		System.out.println("Erreur connexion wikipedia : " + WikiUrl.getURL());
+	    	}
+		    nurl++;
+	    }
+	    br.close();
+	    assertEquals(nurl, 336);
+	}
 
 }

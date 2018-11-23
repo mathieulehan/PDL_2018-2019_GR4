@@ -1,9 +1,13 @@
 package classes;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import classes.exceptions.ArticleInexistantException;
+import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 /**
  * Classe permettant de recuperer les informations d'une page via son url
@@ -60,6 +64,7 @@ public class Url {
 		try {
 			HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
 			if (!(connexion.getResponseCode() == HttpURLConnection.HTTP_OK)) {
+				System.out.println(this.url);
 				throw new UrlInvalideException("Page inexistante");
 			}
 			connexion.disconnect();
@@ -68,7 +73,7 @@ public class Url {
 			throw new UrlInvalideException("Connexion echouee");
 		}
 	}
-
+	
 	/**
 	 * Methode implementant les precedentes methodes
 	 * @return true si titre valide, langue valide et connexion reussie

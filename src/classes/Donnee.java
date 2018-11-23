@@ -8,6 +8,7 @@ import java.net.URL;
 
 import org.json.JSONException;
 
+import classes.exceptions.ArticleInexistantException;
 import exceptions.ConversionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
@@ -31,8 +32,9 @@ public abstract class Donnee{
 	 * @throws ConversionInvalideException 
 	 * @throws JSONException 
 	 * @throws IOException 
+	 * @throws ArticleInexistantException 
 	 */
-	abstract void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException, IOException, JSONException;
+	abstract void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException, IOException, JSONException, ArticleInexistantException;
 
 	/**
 	 * A partir de l'url donnee, recupere le contenu de la page en json
@@ -54,6 +56,22 @@ public abstract class Donnee{
 			return result.toString();
 		} catch (Exception e) {
 			throw new ExtractionInvalideException("Recuperation du contenu impossible");
+		}
+	}
+
+	/**
+	 * On verifie que la page demandee contient bien un article
+	 * @return
+	 * @throws ArticleInexistantException
+	 * @throws ExtractionInvalideException
+	 */
+	public boolean contientUnArticle(URL url) throws ArticleInexistantException, ExtractionInvalideException{
+		String contenu = recupContenu(url);
+		if (contenu.contains("<table id=\"noarticletext\"")) {
+			return true;
+		}
+		else {
+			throw new ArticleInexistantException("Il n'y a pas d'articles pour cette page.");
 		}
 	}
 
