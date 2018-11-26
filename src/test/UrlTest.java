@@ -9,26 +9,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import org.junit.Test;
 import classes.Url;
+import exceptions.ArticleInexistantException;
 import exceptions.UrlInvalideException;
 
 public class UrlTest {
-
-	/*
-	@Test
-	public void test_connexion_http_valide() throws UrlInvalideException, IOException {
-		Url url = new Url(new URL("https://fr.wikipedia.org/wiki/Espagne"));
-		assertTrue(url.testerConnexionHTTP());
-	}
-	 */
 
 	@Test(expected = UrlInvalideException.class)
 	public void detection_langues_non_geree() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://fy.wikipedia.org/wiki/Espagne"));
 		url.estUrlValide();
 	}
+	
+	@Test(expected = UrlInvalideException.class)
+	public void page_non_wikipedia() throws UrlInvalideException, MalformedURLException {
+		Url url = new Url(new URL("https://www.google.com"));
+		url.estUrlValide();
+	}
 
 	@Test(expected = MalformedURLException.class)
-	public void detection_titre_incomplet() throws UrlInvalideException, MalformedURLException {
+	public void titre_inexistant() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://fr.wikipedia.org/wiki/"));
 		url.estUrlValide();
 	}
@@ -47,13 +46,13 @@ public class UrlTest {
 	}
 	
 	@Test(expected = MalformedURLException.class)
-	public void detection_titre_langue_incomplet() throws UrlInvalideException, MalformedURLException {
+	public void titre_langue_incomplet() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://.wikipedia.org/wiki/"));
 		url.estUrlValide();
 	}
 	
 	@Test
-	public void verification_336_urls() throws UrlInvalideException, IOException   {
+	public void verification_336_urls_valides() throws UrlInvalideException, IOException   {
 		String BASE_WIKIPEDIA_URL = "src/ressources/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;
@@ -68,7 +67,7 @@ public class UrlTest {
 	}
 	
 	@Test
-	public void tester_connexion_336_urls() throws UrlInvalideException, IOException   {
+	public void tester_connexion_336_urls() throws UrlInvalideException, IOException, ArticleInexistantException   {
 		String BASE_WIKIPEDIA_URL = "src/ressources/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;

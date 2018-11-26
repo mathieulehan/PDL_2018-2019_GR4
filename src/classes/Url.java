@@ -1,13 +1,11 @@
 package classes;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import exceptions.ArticleInexistantException;
-import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
 /**
  * Classe permettant de recuperer les informations d'une page via son url
@@ -28,21 +26,24 @@ public class Url {
 	}
 
 	/**
-	 * Verification de la langue de la page
-	 * @return true si la langue est en francais ou en anglais
+	 * Verification de l'url (provient bien du site Wikipedia) et de la langue de la page
+	 * Initialiation variable langue
+	 * @return true si la langue est en francais ou en anglais, false sinon
 	 * @throws UrlInvalideException 
 	 */
-	public boolean estLangueValide() throws UrlInvalideException {
-		langue = url.toString().substring(8, url.toString().indexOf('.'));
-		if (!langue.matches("fr|en")) {
-			throw new UrlInvalideException("Langue invalide");
+	public boolean estPageWikipedia() throws UrlInvalideException {
+		String debutURL = url.toString().substring(0, url.toString().lastIndexOf('/')+1);;
+		if (!debutURL.matches("https://(fr|en).wikipedia.org/wiki/")) {
+			throw new UrlInvalideException("URL non prise en charge");
 		}  
+		langue = url.toString().substring(8, url.toString().indexOf('.'));
 		return true;
 	}
 
 	/**
 	 * Verification du titre de la page
-	 * @return true si le titre comporte au moins un caractere
+	 * Initialiation variable titre
+	 * @return true si le titre comporte au moins un caractere, false sinon
 	 * @throws MalformedURLException 
 	 */
 	public boolean estTitreValide() throws MalformedURLException {
@@ -57,31 +58,32 @@ public class Url {
 	/**
 	 * Tester une connexion avec le serveur HTTP afin de savoir si l'url renvoie bien a une page existante
 	 * ATTENTION methode lourde (en temps et en memoire)
-	 * @return true si la connexion HTTP est reussie 
+	 * @return true si la connexion HTTP est reussie, false sinon
 	 * @throws UrlInvalideException 
+	 * @throws ArticleInexistantException 
+	 * @throws IOException 
 	 */
-	public boolean testerConnexionHTTP() throws UrlInvalideException {
-		try {
-			HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
-			if (!(connexion.getResponseCode() == HttpURLConnection.HTTP_OK)) {
-				System.out.println(this.url);
-				throw new UrlInvalideException("Page inexistante");
-			}
-			connexion.disconnect();
-			return true;
-		} catch (Exception e) {
-			throw new UrlInvalideException("Connexion echouee");
+	public boolean testerConnexionHTTP() throws ArticleInexistantException, IOException {
+		HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
+		if (!(connexion.getResponseCode() == HttpURLConnection.HTTP_OK)) {
+			throw new ArticleInexistantException("Aucun article disponible pour cette url");
 		}
+		connexion.disconnect();
+		return true;
 	}
-	
+
 	/**
-	 * Methode implementant les precedentes methodes
-	 * @return true si titre valide, langue valide et connexion reussie
+	 * Methode implementant verifiant l'url dans sa globalite:
+	 * - url provenant de wikipedia 
+	 * - page en anglais ou en francais
+	 * - titre de page existant
+	 * - test de la connexion a la page 
+	 * @return true si url valide et connexion reussie, false sinon
 	 * @throws UrlInvalideException
 	 * @throws MalformedURLException 
 	 */
 	public boolean estUrlValide() throws UrlInvalideException, MalformedURLException {
-		return estTitreValide() && estLangueValide() /*&& testerConnexionHTTP()*/;
+		return estTitreValide() && estPageWikipedia() /*&& testerConnexionHTTP()*/;
 	}
 
 	/**
@@ -91,7 +93,7 @@ public class Url {
 	public URL getURL() {
 		return this.url;
 	}
-	
+
 	/**
 	 * Recuperer le titre de la page url
 	 * @return String titre
