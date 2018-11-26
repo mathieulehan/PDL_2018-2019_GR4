@@ -1,9 +1,11 @@
 package classes;
 
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -111,8 +113,7 @@ public class Donnee_Wikitable extends Donnee{
 	 */
 	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
 		try {
-			FileOutputStream fileStream = new FileOutputStream(outputPath);
-			OutputStreamWriter writer = new OutputStreamWriter(fileStream, "UTF-8");
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputPath), "UTF8"));
 			if(pageComporteTableau(wikitable)){
 				wikitable = wikitable.replaceAll("\n", "");
 				wikitable = wikitable.replaceAll(" align=\"center\"", "");
@@ -124,6 +125,7 @@ public class Donnee_Wikitable extends Donnee{
 						writer.write(ligne.concat(";"));
 					}
 					if (ligne.contains("!")) {
+						ligne = ligne.replaceAll("(\\|\\|)", ";");
 						String[] entetes = ligne.split("!");
 						for (String entete : entetes) {
 							if(entete.startsWith(" scope=col |")) {
