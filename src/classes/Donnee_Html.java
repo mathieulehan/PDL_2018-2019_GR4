@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import classes.exceptions.ArticleInexistantException;
+import exceptions.ArticleInexistantException;
 import exceptions.ConversionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;

@@ -8,7 +8,7 @@ import java.net.URL;
 
 import org.json.JSONException;
 
-import classes.exceptions.ArticleInexistantException;
+import exceptions.ArticleInexistantException;
 import exceptions.ConversionInvalideException;
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
