@@ -67,20 +67,25 @@ public class UrlTest {
 	}
 	
 	@Test
-	public void tester_connexion_336_urls() throws UrlInvalideException, IOException, ArticleInexistantException   {
+	public void tester_connexion_336_urls() throws UrlInvalideException, IOException {
 		String BASE_WIKIPEDIA_URL = "src/ressources/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;
-	    int nurl = 0;
+	    int articleExistant = 0, articleInexistant = 0;
 	    while ((url = br.readLine()) != null) {
 	    	Url WikiUrl = new Url(new URL(url));
-	    	if (!WikiUrl.testerConnexionHTTP()) {
-	    		System.out.println("Erreur connexion wikipedia : " + WikiUrl.getURL());
-	    	}
-		    nurl++;
+	    	try {
+				WikiUrl.testerConnexionHTTP();
+		    	articleExistant++;
+			} catch (ArticleInexistantException e) {
+				// TODO Auto-generated catch block
+				articleInexistant++;
+		    	System.out.println("Erreur connexion wikipedia : " + WikiUrl.getURL());
+			}
 	    }
 	    br.close();
-	    assertEquals(nurl, 336);
+	    assertEquals(articleExistant, 314);
+	    assertEquals(articleInexistant, 22);
 	}
 
 }
