@@ -1,57 +1,98 @@
 package classes;
 
-import exceptions.FormatsEquivalentsException;
+import exceptions.ResultatEstNullException;
 
 /**
- * Classe permettant d'effectuer diverses comparaison entre les deux methodes de recuperation de table wikipedia
+ * Classe permettant de recuperer dse statistiques sur les deux methodes de recuperation de table wikipedia,
+ * afin de determiner laquelle est la meilleure.
  * @author mathi & thomas
  *
  */
 public class ComparerCSV {
 
+	private Donnee_Html html;
+	private Donnee_Wikitable wikitable;
+	private long tempsExeHtml;
+	private long tempsExeWikitable;
+	private int tablesHtml;
+	private int tablesWikitext;
+	private int lignesHtml;
+	private int lignesWikitable;
+	private int colonnesHtml;
+	private int colonnesWikitable;
+	
 	/**
-	 * @param html L'objet gerant le html
-	 * @param wikitable L'objet gerant le wikitext
-	 * @return true si le tps d'execution du parsing du html est inferieur a celui du wikitext
-	 * TODO que faire en cas d'egalite parfaite meme si peu probable ?
+	 * Constructure de ComparerCSV, a instancier pour chaque pgaage wikipedia
+	 * @param html l'objet gerant le parsing du html au csv
+	 * @param wikitable l'objet gerant le parsing du wikitext au csv
 	 */
-	public boolean comparaisonTempsExecution(Donnee_Html html, Donnee_Wikitable wikitable) {
-		return (html.getTime() < wikitable.getTime());
+	public ComparerCSV(Donnee_Html html, Donnee_Wikitable wikitable) {
+		this.html = html;
+		this.wikitable = wikitable;
 	}
 
 	/**
-	 * @param html L'objet gerant le html
-	 * @param wikitable L'objet gerant le wikitext
-	 * @return true si le html renvoie le meilleur tableau
-	 * TODO que faire en cas d'egalite parfaite meme si peu problable ? -> renvoyer exception
-	 * @throws FormatsEquivalentsException 
+	 * Recupere des statistiques sur les deux modes d'extraction - Wikitext & HTML - 
+	 * das l'optique de determier lequel est le meilleur.
 	 */
-	public boolean comparaisonDonneesTableau(Donnee_Html html, Donnee_Wikitable wikitable) throws FormatsEquivalentsException {
-		int lignesHtml = html.getLignesEcrites();
-		int colonnesHtml= html.getColonnesEcrites();
-		int lignesWikitext= wikitable.getLignesEcrites();
-		int colonnesWikitext = wikitable.getColonnesEcrites();
-		if((lignesHtml > lignesWikitext) && (colonnesHtml > colonnesWikitext)){
-			return true;
-		} else if ((lignesHtml < lignesWikitext) && (colonnesHtml < colonnesWikitext)) {
-			return false;
-		} else if (((lignesHtml > lignesWikitext) && (colonnesHtml < colonnesWikitext)) | ( (lignesHtml < lignesWikitext) && (colonnesHtml > colonnesWikitext))){
-			// TODO pour le moment, priorité au html
-			return lignesHtml > lignesWikitext; 
-		} else { // on a une egalite
-			throw new FormatsEquivalentsException("Nombre de lignes et de colonnes égaux");
-		}
-		// TODO voir pour ajouter des comparaisons autres que lignes + colonnes
+	public void informationsExtraction() {
+		this.tempsExeHtml = html.getTime();
+		this.tempsExeWikitable = wikitable.getTime();
+		this.lignesHtml = html.getLignesEcrites();
+		this.lignesWikitable = wikitable.getLignesEcrites();
+		this.colonnesHtml = html.getColonnesEcrites();
+		this.colonnesWikitable = wikitable.getColonnesEcrites();
+		this.tablesHtml = html.getNbTableaux();
+		this.tablesWikitext = wikitable.getNbTableaux();
+	}
+	
+	public Donnee_Html getHtml() throws ResultatEstNullException {
+		if(html == null) throw new ResultatEstNullException("tablesHtml n'est pas de type int");
+		return html;
 	}
 
-	public Donnee meilleurFormat(Donnee_Html html, Donnee_Wikitable wikitable) throws FormatsEquivalentsException {
-		if(comparaisonTempsExecution(html, wikitable) && comparaisonDonneesTableau(html, wikitable)){
-			return html;
-		}else if(!comparaisonTempsExecution(html, wikitable) && !comparaisonDonneesTableau(html, wikitable)) {
-			return wikitable;
-		}else {
-			throw new FormatsEquivalentsException("Pas de meilleur format");
-		}
+	public Donnee_Wikitable getWikitable() throws ResultatEstNullException {
+		if(wikitable == null) throw new ResultatEstNullException("tablesHtml n'est pas de type int");
+		return wikitable;
 	}
 
+	public long getTempsExeHtml() throws ResultatEstNullException {
+		if(tempsExeHtml != (long)tempsExeHtml) throw new ResultatEstNullException("tempsExeHtml n'est pas de type long");
+		return tempsExeHtml;
+	}
+
+	public long getTempsExeWikitable() throws ResultatEstNullException {
+		if(tempsExeWikitable != (long)tempsExeWikitable) throw new ResultatEstNullException("tempsExeWikitable n'est pas de type long");
+		return tempsExeWikitable;
+	}
+
+	public int getLignesHtml() throws ResultatEstNullException {
+		if(lignesHtml != (int)lignesHtml) throw new ResultatEstNullException("lignesHtml n'est pas de type int");
+		return lignesHtml;
+	}
+
+	public int getLignesWikitable() throws ResultatEstNullException {
+		if(lignesWikitable != (int)lignesWikitable) throw new ResultatEstNullException("lignesWikitable n'est pas de type int");
+		return lignesWikitable;
+	}
+
+	public int getColonnesHtml() throws ResultatEstNullException {
+		if(colonnesHtml != (int)colonnesHtml) throw new ResultatEstNullException("colonnesHtml n'est pas de type int");
+		return colonnesHtml;
+	}
+
+	public int getColonnesWikitable() throws ResultatEstNullException {
+		if(colonnesWikitable != (int)colonnesWikitable) throw new ResultatEstNullException("colonnesWikitable n'est pas de type int");
+		return colonnesWikitable;
+	}
+
+	public int getTablesHtml() throws ResultatEstNullException {
+		if(tablesHtml != (int)tablesHtml) throw new ResultatEstNullException("tablesHtml n'est pas de type int");
+		return tablesHtml;
+	}
+
+	public int getTablesWikitext() throws ResultatEstNullException {
+		if(tablesWikitext != (int)tablesWikitext) throw new ResultatEstNullException("tablesWikitext n'est pas de type int");
+		return tablesWikitext;
+	}
 }

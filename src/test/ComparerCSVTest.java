@@ -1,13 +1,15 @@
 package test;
 
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import classes.ComparerCSV;
 import classes.Donnee_Html;
 import classes.Donnee_Wikitable;
-import exceptions.FormatsEquivalentsException;
+import exceptions.ResultatEstNullException;
 import classes.Donnee;
 
 /**
@@ -16,174 +18,67 @@ import classes.Donnee;
  *
  */
 public class ComparerCSVTest {
-	
+
 	// On "mock" les classes qui vont être utilisées dans le test
-	ComparerCSV comparerCSVTest = Mockito.mock(ComparerCSV.class);
 	Donnee donneeTest = Mockito.mock(Donnee.class);
-	Donnee_Html donnee_HtmlTest = Mockito.mock(Donnee_Html.class);
-	Donnee_Wikitable donnee_WikitableTest = Mockito.mock(Donnee_Wikitable.class);
+	Donnee_Html donneeHtmlTest = Mockito.mock(Donnee_Html.class);
+	Donnee_Wikitable donneeWikitableTest = Mockito.mock(Donnee_Wikitable.class);
 
 	/**
-	 * Le temps d'execution du parsing du html est superieur a celui du wikitext
-	 * La methode doit renvoyer true, le parsing du html a le meilleur temps d'execution
+	 * On teste tous les getters de ComparerCSV.
+	 * @throws ResultatEstNullException si un getter ne retourne pas la valeur attendue
 	 */
 	@Test
-	public void temps_html_inferieur_temps_wikitext() {
-		/* On "mock" les methodes qui vont être executees, on est donc surs que ce qu'elles vont renvoyer,
-		excepte la methode à tester.*/
-		Mockito.when(donneeTest.getTime()).thenCallRealMethod(); // la methode s'execute normalement
-		Mockito.when(donnee_HtmlTest.getTime()).thenReturn((long) 10); // la methode retourne 10
-		Mockito.when(donnee_WikitableTest.getTime()).thenReturn((long) 20); // la methode retourne 20
-		Mockito.when(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		// Si tps d'execution html < wikitext, alors on renvoie true.
-		Assert.assertTrue(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest));
-	}
-	
-	/**
-	 * Le temps d'execution du parsing du wikitext est superieur a celui du html
-	 * La methode doit renvoyer false, le parsing du wikitext a le meilleur temps d'execution
-	 */
-	@Test
-	public void temps_html_superieur_temps_wikitext() {
-		/* On "mock" les methodes qui vont etre executees, on est donc surs que ce qu'elles vont renvoyer,
-		excepte la methode à tester.*/
-		Mockito.when(donneeTest.getTime()).thenCallRealMethod(); // la methode s'execute normalement
-		Mockito.when(donnee_HtmlTest.getTime()).thenReturn((long) 20); // la methode retourne 20
-		Mockito.when(donnee_WikitableTest.getTime()).thenReturn((long) 10); // la methode retourne 10
-		Mockito.when(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		// Si tps d'execution html > wikitext, alors on renvoie false.
-		Assert.assertFalse(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest));
-	}
-	
-	/**
-	 * On obtient plus de lignes et de colonnes en parsant le html plutot qu'en parsant le wikitext
-	 * La methode doit renvoyer true, le parsing du html renvoie les meilleures donnees
-	 * @throws FormatsEquivalentsException 
-	 */
-	@Test
-	public void nbLigne_nbColonne_html_superieur() throws FormatsEquivalentsException {
-		Mockito.when(donnee_HtmlTest.getLignesEcrites()).thenReturn(500);
-		Mockito.when(donnee_HtmlTest.getColonnesEcrites()).thenReturn(500);
-		Mockito.when(donnee_WikitableTest.getLignesEcrites()).thenReturn(200);
-		Mockito.when(donnee_WikitableTest.getColonnesEcrites()).thenReturn(200);
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		Assert.assertTrue(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest));
-	}
-	
-	/**
-	 * On obtient plus de lignes et de colonnes en parsant le wikitext plutot qu'en parsant le html
-	 * La methode doit renvoyer true, le parsing du wikitext renvoie les meilleures donnees
-	 * @throws FormatsEquivalentsException 
-	 */
-	@Test
-	public void nbLigne_nbColonne_wikitext_superieur() throws FormatsEquivalentsException {
-		Mockito.when(donnee_HtmlTest.getLignesEcrites()).thenReturn(300);
-		Mockito.when(donnee_HtmlTest.getColonnesEcrites()).thenReturn(300);
-		Mockito.when(donnee_WikitableTest.getLignesEcrites()).thenReturn(500);
-		Mockito.when(donnee_WikitableTest.getColonnesEcrites()).thenReturn(500);
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		Assert.assertFalse(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest));
-	}
-	
-	/**
-	 * On obtient plus de lignes parsant le wikitext mais plus de colonnes en parsant le html
-	 * La methode doit renvoyer false, le parsing du wikitext renvoie plus de lignes
-	 * @throws FormatsEquivalentsException 
-	 */
-	@Test
-	public void comparaisonDonneesTableau() throws FormatsEquivalentsException {
-		Mockito.when(donnee_HtmlTest.getLignesEcrites()).thenReturn(300);
-		Mockito.when(donnee_HtmlTest.getColonnesEcrites()).thenReturn(500);
-		Mockito.when(donnee_WikitableTest.getLignesEcrites()).thenReturn(500);
-		Mockito.when(donnee_WikitableTest.getColonnesEcrites()).thenReturn(300);
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		Assert.assertFalse(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest));
-	}
-	
-	/**
-	 * On obtient plus de lignes parsant le html mais plus de colonnes en parsant le wikitext
-	 * La methode doit renvoyer false, le parsing du html renvoie plus de lignes
-	 * @throws FormatsEquivalentsException 
-	 */
-	@Test
-	public void comparaisonDonneesTableau2() throws FormatsEquivalentsException {
-		Mockito.when(donnee_HtmlTest.getLignesEcrites()).thenReturn(500);
-		Mockito.when(donnee_HtmlTest.getColonnesEcrites()).thenReturn(300);
-		Mockito.when(donnee_WikitableTest.getLignesEcrites()).thenReturn(300);
-		Mockito.when(donnee_WikitableTest.getColonnesEcrites()).thenReturn(500);
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		Assert.assertTrue(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest));
-	}
-	
-	/**
-	 * On obtient plus de lignes parsant le html mais plus de colonnes en parsant le wikitext
-	 * La methode doit renvoyer false, le parsing du html renvoie plus de lignes
-	 * @throws FormatsEquivalentsException 
-	 */
-	@Test(expected = FormatsEquivalentsException.class)
-	public void nbLignes_nbColonnes_egals() throws FormatsEquivalentsException {
-		Mockito.when(donnee_HtmlTest.getLignesEcrites()).thenReturn(500);
-		Mockito.when(donnee_HtmlTest.getColonnesEcrites()).thenReturn(500);
-		Mockito.when(donnee_WikitableTest.getLignesEcrites()).thenReturn(500);
-		Mockito.when(donnee_WikitableTest.getColonnesEcrites()).thenReturn(500);
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest);
-	}
-	
-	/**
-	 * Le parsing du html s'execute plus rapidement que celui du wikitext
-	 * On recupere plus de lignes et de cellules avec le parsing du html plutot qu'avec celui du wikitext
-	 * On s'attend a ce que le html soit declare le meilleur format
-	 * @throws FormatsEquivalentsException 
-	 */
-	@Test
-	public void meilleur_format_html() throws FormatsEquivalentsException {
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(true);
-		Mockito.when(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(true);
-		Mockito.when(comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		Assert.assertEquals(donnee_HtmlTest, comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest));
-	}
-	
-	/**
-	 * Le parsing du wikitext s'execute plus rapidement que celui du html
-	 * On recupere plus de lignes et de cellules avec le parsing du wikitext plutot qu'avec celui du html
-	 * On s'attend a ce que le wikitext soit declare le meilleur format
-	 * @throws FormatsEquivalentsException 
-	 */
-	@Test
-	public void meilleur_format_wikitext() throws FormatsEquivalentsException {
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(false);
-		Mockito.when(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(false);
-		Mockito.when(comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		Assert.assertEquals(donnee_WikitableTest, comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest));
+	public void informationExtraction() throws ResultatEstNullException {
+		/* on part du principe qu'on a fait tourner les objets
+		donneeHtmlTest et donneeWikitableTest et que l'on a donc recupere
+		plusieurs statistiques, auxquelles on est cense pouvoir acceder depuis un objet ComparerCSV.
+		 */
+		Mockito.when(donneeHtmlTest.getTime()).thenReturn((long) 100);
+		Mockito.when(donneeWikitableTest.getTime()).thenReturn((long) 150);
+		Mockito.when(donneeHtmlTest.getLignesEcrites()).thenReturn(25);
+		Mockito.when(donneeWikitableTest.getLignesEcrites()).thenReturn(20);
+		Mockito.when(donneeHtmlTest.getColonnesEcrites()).thenReturn(10);
+		Mockito.when(donneeWikitableTest.getColonnesEcrites()).thenReturn(8);
+		Mockito.when(donneeHtmlTest.getNbTableaux()).thenReturn(8);
+		Mockito.when(donneeWikitableTest.getNbTableaux()).thenReturn(7);
+		ComparerCSV comparerCSV = new ComparerCSV(donneeHtmlTest, donneeWikitableTest);
+		// on recupere les statistiques liees aux extractions realisees
+		comparerCSV.informationsExtraction();
+		assertEquals(100, comparerCSV.getTempsExeHtml());
+		assertEquals(150, comparerCSV.getTempsExeWikitable());
+		assertEquals(25, comparerCSV.getLignesHtml());
+		assertEquals(20, comparerCSV.getLignesWikitable());
+		assertEquals(10, comparerCSV.getColonnesHtml());
+		assertEquals(8, comparerCSV.getColonnesWikitable());
+		assertEquals(8, comparerCSV.getTablesHtml());
+		assertEquals(7, comparerCSV.getTablesWikitext());
 	}
 
 	/**
-	 * Le parsing du wikitext s'execute plus rapidement que celui du html
-	 * On recupere plus de lignes et de cellules avec le parsing du html plutot qu'avec celui du wikitext
-	 * On s'attend a ce que la methode renvoie null, il n'y a pas de format meilleur que l'autre
-	 * @throws FormatsEquivalentsException 
+	 * On doit renvoyer une exception si on tente de recuperer la valeur
+	 * de l'attribut html alors qu'elle est null.
 	 */
-	@Test(expected = FormatsEquivalentsException.class)
-	public void formats_equivalents() throws FormatsEquivalentsException {
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(true);
-		Mockito.when(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(false);
-		Mockito.when(comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest);
+	@Test
+	public void getHtmlNull() {
+		final ComparerCSV comparerCSVTest = new ComparerCSV(null, null);
+		assertThrows(ResultatEstNullException.class,
+				()->{
+					comparerCSVTest.getHtml();
+				});
 	}
 	
 	/**
-	 * Le parsing du html s'execute plus rapidement que celui du wikitext
-	 * On recupere plus de lignes et de cellules avec le parsing du wikitext plutot qu'avec celui du html
-	 * On s'attend a ce que la methode renvoie null, il n'y a pas de format meilleur que l'autre
-	 * @throws FormatsEquivalentsException 
+	 * On doit renvoyer une exception si on tente de recuperer la valeur
+	 * de l'attribut wikitable alors qu'elle est null.
 	 */
-	@Test(expected = FormatsEquivalentsException.class)
-	public void formats_equivalents2() throws FormatsEquivalentsException {
-		Mockito.when(comparerCSVTest.comparaisonDonneesTableau(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(false);
-		Mockito.when(comparerCSVTest.comparaisonTempsExecution(donnee_HtmlTest, donnee_WikitableTest)).thenReturn(true);
-		Mockito.when(comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest)).thenCallRealMethod();
-		comparerCSVTest.meilleurFormat(donnee_HtmlTest, donnee_WikitableTest);
+	@Test
+	public void getWikitableNull() {
+		final ComparerCSV comparerCSVTest = new ComparerCSV(null, null);
+		assertThrows(ResultatEstNullException.class,
+				()->{
+					comparerCSVTest.getWikitable();
+				});
 	}
-	
 }
+
