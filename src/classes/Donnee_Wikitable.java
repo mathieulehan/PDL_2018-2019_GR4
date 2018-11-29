@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import exceptions.ExtractionInvalideException;
@@ -78,7 +79,7 @@ public class Donnee_Wikitable extends Donnee{
 	public void wikitableVersCSV() throws ExtractionInvalideException {
 		try {
 			FileWriter writer = new FileWriter(outputPath);
-			if(pageComporteTableau(wikitable)){
+			if(pageComporteTableau()){
 				wikitable = wikitable.replaceAll("\n", "");
 				String[] lignes = wikitable.split("\\|-");
 				for (String ligne : lignes) {
@@ -114,7 +115,7 @@ public class Donnee_Wikitable extends Donnee{
 	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
 		try {
             Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputPath), "UTF8"));
-			if(pageComporteTableau(wikitable)){
+			if(pageComporteTableau()){
 				wikitable = wikitable.replaceAll("\n", "");
 				wikitable = wikitable.replaceAll(" align=\"center\"", "");
 				String[] lignes = wikitable.split("(\\|-)");
@@ -161,11 +162,16 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	boolean pageComporteTableau(String wikitable) throws ExtractionInvalideException {
+	boolean pageComporteTableau() throws ExtractionInvalideException {
 		if(!wikitable.contains("{|")){
 			throw new ExtractionInvalideException("Aucun tableau present dans la page");
 		}
 		return true;
+	}
+	
+	@Override
+	public int getNbTableaux() {
+		return StringUtils.countMatches("{|", wikitable);
 	}
 
 	public int getColonnesEcrites() {
@@ -175,5 +181,4 @@ public class Donnee_Wikitable extends Donnee{
 	public int getLignesEcrites() {
 		return lignesEcrites;
 	}
-
 }

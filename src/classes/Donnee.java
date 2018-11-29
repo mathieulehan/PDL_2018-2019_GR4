@@ -19,7 +19,7 @@ import exceptions.UrlInvalideException;
  *
  */
 
-public abstract class Donnee{
+public abstract class Donnee {
 
 	private long tempsOriginal;
 
@@ -80,8 +80,10 @@ public abstract class Donnee{
 	 * @return boolean
 	 * @throws ExtractionInvalideException 
 	 */
-	abstract boolean pageComporteTableau(String donnee) throws ExtractionInvalideException;
+	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
 
+	public abstract int getNbTableaux();
+	
 	/**
 	 * Demarre le chronometre en back
 	 */

@@ -1,11 +1,12 @@
 package classes;
 
 import java.io.FileOutputStream;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,34 +46,16 @@ public class Donnee_Html extends Donnee{
 	 */
 	@Override
 	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException, ArticleInexistantException {
-		if(url.estUrlValide() && (contientUnArticle(url.getURL()))) {
+		if(url.estUrlValide()) {
 			start();
 			String langue = url.getLangue();
 			String titre = url.getTitre();
 			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			String titreSain = titre.replaceAll("/|\\|?|:|*|<|>|\\||\"", "");
-			donneeHTML = "" + recupContenu(page);
-			htmlVersCSV(titreSain);
-		}
-	}
-	
-	/**
-	 * Meme fonction que extraire, mais avec une liste en entree, prevision du "concours"
-	 * @param listUrl
-	 * @throws UrlInvalideException
-	 * @throws ExtractionInvalideException
-	 * @throws MalformedURLException
-	 * @throws ConversionInvalideException
-	 */
-	public void extraireList(Url[] listUrl) throws UrlInvalideException, ExtractionInvalideException, MalformedURLException, ConversionInvalideException {
-		for (int i = 0; i < listUrl.length; i++) {
-			start();
-			String langue = listUrl[i].getLangue();
-			String titre = listUrl[i].getTitre();
-			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			String titreSain = titre.replaceAll("/|\\|?|:|*|<|>|\\||\"", "");
-			donneeHTML = "" + recupContenu(page);
-			htmlVersCSV(titreSain);
+			this.donneeHTML = recupContenu(page);
+			if(pageComporteTableau()){
+				String titreSain = titre.replaceAll("[\\/\\?\\:\\<\\>]", "");
+				htmlVersCSV(titreSain);
+			}
 		}
 	}
 
@@ -85,21 +68,30 @@ public class Donnee_Html extends Donnee{
 		try {
 			FileOutputStream outputStream = new FileOutputStream(outputPath);
 			OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
-			Document page = Jsoup.parseBodyFragment(donneeHTML);
-			Elements lignes = page.getElementsByTag("tr");
+			Document page = Jsoup.parseBodyFragment(this.donneeHTML);
+			Elements wikitables = page.getElementsByClass("wikitable");
 
-			for (Element ligne : lignes) {
-				Elements cellules = ligne.getElementsByTag("td");
-				for (Element cellule : cellules) {
-					writer.write(cellule.text().concat("; "));
-					colonnesEcrites++;
-				}
-				writer.write("\n");
-				lignesEcrites++;
+			for (Element table : wikitables) {
+				// entetes -> ecrireEnTete(page, writer);
+				ecrireLignes(page, writer);
+				writer.write("\n\n");
 			}
 			writer.close();
 		} catch (Exception e) {
-			throw new ConversionInvalideException("Convertion HTML vers CSV incorrecte");
+			throw new ConversionInvalideException("Conversion HTML vers CSV incorrecte");
+		}
+	}
+
+	public void ecrireLignes(Document page, OutputStreamWriter writer) throws IOException {
+		Elements lignes = page.getElementsByTag("tr");
+		for (Element ligne : lignes) {
+			Elements cellules = ligne.getElementsByTag("td");
+			for (Element cellule : cellules) {
+				writer.write(cellule.text().concat("; "));
+				colonnesEcrites++;
+			}
+			writer.write("\n");
+			lignesEcrites++;
 		}
 	}
 
@@ -109,14 +101,19 @@ public class Donnee_Html extends Donnee{
 	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	public boolean pageComporteTableau(String html) throws ExtractionInvalideException {
-		Document page = Jsoup.parseBodyFragment(donneeHTML);
-		if(page.getElementsByTag("table") == null){
+	public boolean pageComporteTableau() throws ExtractionInvalideException {
+		Document page = Jsoup.parseBodyFragment(this.donneeHTML);
+		if(page.getElementsByTag("<table class=\"wikitable\">") == null){
 			throw new ExtractionInvalideException("Aucun tableau present dans la page");
 		}
 		return true;
 	}
 
+	@Override
+	public int getNbTableaux() {
+		return StringUtils.countMatches("<table class=\"wikitable\">", donneeHTML);
+	}
+	
 	public int getColonnesEcrites() {
 		return colonnesEcrites;
 	}
