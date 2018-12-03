@@ -84,6 +84,7 @@ public class Donnee_WikitableTest {
 		URL monUrl;
 		String contenu = "", wikitable = "";
 		try {
+			//https://fr.wikipedia.org/w/api.php?action=parse&page=Kevin_Bacon&prop=wikitext&format=json
 			monUrl = new URL("https://en.wikipedia.org/w/api.php?action=parse&page=Comparison_between_Esperanto_and_Ido&prop=wikitext&format=json");
 			Url newUrl = new Url(monUrl);
 			Donnee_Wikitable test = new Donnee_Wikitable();

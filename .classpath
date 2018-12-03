@@ -12,5 +12,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Thomas/Desktop/Miage/PDL/wikipedia-parser-0.1/wikipedia-parser.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Thomas/Desktop/Miage/PDL/jwktl-1.0.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

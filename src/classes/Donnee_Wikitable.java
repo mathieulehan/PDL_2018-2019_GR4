@@ -2,13 +2,11 @@ package classes;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -49,7 +47,7 @@ public class Donnee_Wikitable extends Donnee{
 			URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
 			String json = recupContenu(page);
 			wikitable = jsonVersWikitable(json);
-			wikitableVersCSV();
+			wikitableEnTeteVersCSV(wikitable);
 		}
 	}
 
@@ -114,39 +112,28 @@ public class Donnee_Wikitable extends Donnee{
 	 */
 	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
 		try {
+			String[][] res = null;
+			int i = 0,j = 0;
             Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputPath), "UTF8"));
 			if(pageComporteTableau()){
 				wikitable = wikitable.replaceAll("\n", "");
 				wikitable = wikitable.replaceAll(" align=\"center\"", "");
 				String[] lignes = wikitable.split("(\\|-)");
-				System.out.println(wikitable);
 				for (String ligne : lignes) {
-					if(ligne.startsWith("!")){
-						System.out.println(ligne);
-						writer.write(ligne.concat(";"));
-					}
-					if (ligne.contains("!")) {
+					recupPremiereLigneTableau(ligne);
+					if(ligne.startsWith("| ") || ligne.startsWith(" |") || ligne.startsWith(" | ") || ligne.startsWith("!")) {
 						ligne = ligne.replaceAll("(\\|\\|)", ";");
-						String[] entetes = ligne.split("!");
-						for (String entete : entetes) {
-							if(entete.startsWith(" scope=col |")) {
-								entete = entete.replaceAll(" scope=col \\|", "");
-								System.out.println(entete);
-								writer.write(entete.concat(";"));
-							}
-							
+						ligne = ligne.replaceAll("(\\|)", ";");
+						ligne = ligne.replaceAll("!", ";");
+						if(ligne.contains("[")) {
+							ligne = supprimePointVirguleLien(ligne);
 						}
-					}
-					if(ligne.startsWith("| ") || ligne.startsWith(" |") || ligne.startsWith(" | ")) {
-						ligne = ligne.replaceAll("(\\|\\|)", ";");
+						ligne = ligne.substring(1, ligne.length());
 						System.out.println(ligne);
 						writer.write(ligne.concat(";"));
+						writer.write("\n");
 					}
-					if(ligne.startsWith("|}")) {
-						ligne = "";
-						writer.write(ligne.concat("\n"));
-					}
-					writer.write("\n");
+					i++;
 				}
 			}
 			writer.close();
@@ -155,6 +142,51 @@ public class Donnee_Wikitable extends Donnee{
 			throw new ExtractionInvalideException("En-tete vers CSV : extraction et convertion echouees");
 		}
 	}
+	
+	/**
+	 * Supprimer les point virgule des lien 
+	 * @param ligne
+	 * @return
+	 */
+	public String supprimePointVirguleLien(String ligne) {
+		boolean inter = false;
+		for (int i=0; i < ligne.length(); i++){
+			if (ligne.charAt(i) == '[') {
+				inter = true;
+			}
+			if(inter && ligne.charAt(i) == ';') {
+				ligne= ligne.substring(0, i-1)+"/"+ligne.substring(i+1,ligne.length());
+			}
+			if(inter && ligne.charAt(i) == ']') {
+				inter=false;
+			}
+				
+		}
+		ligne = ligne.replaceAll("\\[", "");
+		ligne = ligne.replaceAll("\\]", "");
+		return ligne;
+	}
+	
+	/**
+	 * Recupere la premiere ligne du tableau
+	 * @param ligne
+	 * @return
+	 */
+	public String recupPremiereLigneTableau(String ligne) {
+		
+		for (int i=0; i < ligne.length(); i++){
+			if (ligne.charAt(i) == '{' && ligne.charAt(i+1) == '|') {
+				ligne= ligne.substring(i+1,ligne.length());	
+			}
+			
+		}
+		
+		System.out.println(ligne);
+		
+		return ligne;
+	}
+	
+	
 
 	/**
 	 * Verification de la presence de tableaux dans les donnees
