@@ -11,6 +11,7 @@ import exceptions.ExtractionInvalideException;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -77,14 +78,16 @@ public class Donnee_WikitableTest {
 	/**
 	 * Test tout a la wanaghen, en gros c est un main dans les tests
 	 * @throws ExtractionInvalideException 
+	 * @throws IOException 
 	 * @throws MalformedURLException 
 	 */
 	@Test
-	void testCreationCSV() throws ExtractionInvalideException {
+	void testCreationCSV() throws ExtractionInvalideException, IOException {
 		URL monUrl;
 		String contenu = "", wikitable = "";
 		try {
 			//https://fr.wikipedia.org/w/api.php?action=parse&page=Kevin_Bacon&prop=wikitext&format=json
+			//
 			monUrl = new URL("https://en.wikipedia.org/w/api.php?action=parse&page=Comparison_between_Esperanto_and_Ido&prop=wikitext&format=json");
 			Url newUrl = new Url(monUrl);
 			Donnee_Wikitable test = new Donnee_Wikitable();
@@ -95,7 +98,7 @@ public class Donnee_WikitableTest {
 			}
 			try {
 				wikitable = test.jsonVersWikitable(contenu);			
-				test.wikitableEnTeteVersCSV(wikitable);
+				test.wikitableEnTeteVersCSV("titre",wikitable);
 
 			}catch(ExtractionInvalideException e) {
 				e.printStackTrace();

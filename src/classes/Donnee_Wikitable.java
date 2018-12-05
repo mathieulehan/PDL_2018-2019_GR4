@@ -1,15 +1,14 @@
 package classes;
 
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.jsoup.nodes.Document;
 
 import exceptions.ExtractionInvalideException;
 import exceptions.UrlInvalideException;
@@ -25,10 +24,17 @@ public class Donnee_Wikitable extends Donnee{
 	private String wikitable;
 	private int lignesEcrites = 0;
 	private int colonnesEcrites = 0;
-	private String outputPath = "src/ressources/wikitext.csv";
+	private String[][] tab;
+	private int maxLigne = 0;
+	private int maxColone = 0;
 
 	public Donnee_Wikitable(){
 		this.wikitable = "";
+		
+		this.tab = new String[100][100];
+
+		initTab();
+		
 	}
 
 	/**
@@ -47,7 +53,7 @@ public class Donnee_Wikitable extends Donnee{
 			URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
 			String json = recupContenu(page);
 			wikitable = jsonVersWikitable(json);
-			wikitableEnTeteVersCSV(wikitable);
+			wikitableEnTeteVersCSV(titre,wikitable);
 		}
 	}
 
@@ -70,81 +76,190 @@ public class Donnee_Wikitable extends Donnee{
 	}
 
 	/**
-	 * Parcours le JSON, extrait les tableaux et les convertis en CSV
-	 * @param wikitable
-	 * @throws ExtractionInvalideException 
-	 */
-	public void wikitableVersCSV() throws ExtractionInvalideException {
-		try {
-			FileWriter writer = new FileWriter(outputPath);
-			if(pageComporteTableau()){
-				wikitable = wikitable.replaceAll("\n", "");
-				String[] lignes = wikitable.split("\\|-");
-				for (String ligne : lignes) {
-					if (ligne.startsWith("| ")) {
-						int finHeader = ligne.indexOf("]]'''|", 0);
-						ligne = ligne.substring(0, finHeader) + "; " + ligne.substring(finHeader, ligne.length());
-						colonnesEcrites++;
-						ligne = ligne.replaceAll("(\\{\\{convert\\|)|(\\||adj=\\w+}})|(\\[\\[)|(\\w+]])", "");
-						ligne = ligne.replaceAll("\\{(.*?)\\}", "");
-						// ligne = ligne.replaceAll( "([^;&\\W&])+" , "");
-						ligne = ligne.replaceAll(" (]]''')|( ''')", "");
-						writer.write(ligne.concat("\n"));
-						lignesEcrites++;
-					}
-					else{
-						ligne = "";
-					}
-					ligne = ligne.replaceAll("\\{(.*?)\\}", "");
-				}
-			}	
-			writer.close();
-		}
-		catch (Exception e) {
-			throw new ExtractionInvalideException("Wikitext vers CSV : extraction et convertion echouees");
-		}
-	}
-
-	/**
 	 * 
 	 * @param wikitable
+	 * @throws IOException 
 	 * @throws ExtractionInvalideException
 	 */
-	public void wikitableEnTeteVersCSV(String wikitable) throws ExtractionInvalideException {
-		try {
-			String[][] res = null;
-			int i = 0,j = 0;
-            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputPath), "UTF8"));
-			if(pageComporteTableau()){
-				wikitable = wikitable.replaceAll("\n", "");
-				wikitable = wikitable.replaceAll(" align=\"center\"", "");
-				String[] lignes = wikitable.split("(\\|-)");
-				for (String ligne : lignes) {
-					recupPremiereLigneTableau(ligne);
-					if(ligne.startsWith("| ") || ligne.startsWith(" |") || ligne.startsWith(" | ") || ligne.startsWith("!")) {
-						ligne = ligne.replaceAll("(\\|\\|)", ";");
-						ligne = ligne.replaceAll("(\\|)", ";");
-						ligne = ligne.replaceAll("!", ";");
-						if(ligne.contains("[")) {
-							ligne = supprimePointVirguleLien(ligne);
-						}
-						ligne = ligne.substring(1, ligne.length());
-						System.out.println(ligne);
-						writer.write(ligne.concat(";"));
-						writer.write("\n");
-					}
-					i++;
+	// ATTENTION !! Si tableau avec ! ça ne marche pas
+	public void wikitableEnTeteVersCSV(String titre, String wikitable) throws IOException {
+		int i = 0,j = 0, nbtab = 0;
+        
+		//if(pageComporteTableau()){
+        wikitable = wikitable.replaceAll("\n", "");
+        wikitable = wikitable.replaceAll("\n", "");
+        wikitable = wikitable.replaceAll("(\\|\\|-)", "\\|\\.");
+        wikitable = wikitable.replaceAll(";", "");
+		wikitable = wikitable.replaceAll("align=\"center\"", "");
+		wikitable = wikitable.replaceAll("<br />", "");
+		wikitable = wikitable.replaceAll("</center>", "");
+		wikitable = wikitable.replaceAll("<center>", "");
+        String[] tableaux = wikitable.split("(\\{\\|)|(\\|\\})");
+        
+        for (String tableau : tableaux) {
+			String[] lignes = tableau.split("(\\|-)");
+			for (String ligne : lignes) {
+
+				if(ligne.startsWith(" ") || ligne.startsWith("	")) {
+					ligne = supprimerEspaceDebut(ligne);
 				}
+				//System.out.println(ligne);
+				if(ligne.startsWith("|") || ligne.startsWith(" |") || ligne.startsWith(" | ") || ligne.startsWith("!") || ligne.contains("! ") || ligne.contains(" !") || ligne.contains("wikitable")) {
+					if(ligne.contains("|+")) {
+						ligne = ajouteRetourAlaLigneApresTitre(ligne);
+					}
+					ligne = ligne.replaceAll("(\\|\\|)", ";");
+					ligne = ligne.replaceAll("(\\|)", ";");
+					ligne = ligne.replaceAll("(!!)", ";");
+					ligne = ligne.replaceAll("!", ";");
+					if(ligne.contains("class=\"wikitable\"")) {
+						ligne = supprimeClassWikitable(ligne);
+					}
+					if(ligne.contains("[")) {
+						ligne = supprimePointVirguleLien(ligne);
+					}
+					if(ligne.contains("{")) {
+						ligne = supprimePointVirguleLienMoustache(ligne);
+					}
+					ligne = ligne.substring(1, ligne.length());
+					//System.out.println(ligne);
+					j= remplirTableau(j,i, ligne);
+					maxColone = j;
+					j=0;
+				}
+				i++;
 			}
-			writer.close();
-		}
-		catch (Exception e) {
-			throw new ExtractionInvalideException("En-tete vers CSV : extraction et convertion echouees");
+			
+			if(tableau.contains("wikitable")) {
+				nbtab++;
+				maxLigne = i;
+				//System.out.println(nbtab+" : "+tableau);
+				ecrireCsv(titre,nbtab);
+				initTab();
+			}
+			i=0;
+        }
+		//}
+	}
+	
+	/**
+	 * Initialise le tableau
+	 */
+	public void initTab() {
+		for (String[] ligne: tab) {
+			java.util.Arrays.fill(ligne,"VIDE");
 		}
 	}
 	
 	/**
-	 * Supprimer les point virgule des lien 
+	 * ecrit les fichier csv
+	 * @param titre
+	 * @param nbtab
+	 * @throws IOException
+	 */
+	public void ecrireCsv(String titre, int nbtab) throws IOException{
+		String outputPath = "src/ressources/" + "titre" + nbtab + ".csv";
+		FileOutputStream outputStream = new FileOutputStream(outputPath);
+		OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+		
+		for(int k = 0; k < maxLigne; k++) {
+			for(int l = 0; l < maxColone; l++) {
+				//System.out.println(tab[k][l].concat(";"));
+				writer.write(tab[k][l].concat(";"));
+			}
+			writer.write("\n");
+		}	
+		writer.close();
+	}
+	
+	/**
+	 * Permet de gerer les colspan et les rowspan
+	 * @param j
+	 * @param i
+	 * @param ligne
+	 * @return
+	 */
+	public int remplirTableau(int j ,int i, String ligne) {
+		String[] mots = ligne.split(";");
+		int nbrow = 0;
+		int nbcol = 0;
+		boolean drap = false;
+		for(String mot : mots) {
+			
+			if(tab[i][j] != "VIDE") {
+				j = verifTabVide(i, j);
+			}
+			
+			if(mot.contains("colspan")) {
+				mot = mot.replaceAll("colspan", ",");
+				for (int a=0; a < mot.length(); a++){
+					if (mot.charAt(a) == ',' && mot.charAt(a+1) == '=') {
+						if (mot.charAt(a+2) == '"') {
+							nbcol = Integer.parseInt(Character.toString(mot.charAt(a+3)));
+						}else {
+							nbcol = Integer.parseInt(Character.toString(mot.charAt(a+2)));
+						}
+					}
+				}
+				drap = true;
+			}
+			if(mot.contains("rowspan")) {
+				mot = mot.replaceAll("rowspan", ",");
+				for (int a=0; a < mot.length(); a++){
+					if (mot.charAt(a) == ',' && mot.charAt(a+1) == '=') {
+						if (mot.charAt(a+2) == '"') {
+							nbrow = Integer.parseInt(Character.toString(mot.charAt(a+3)));
+						}else {
+							nbrow = Integer.parseInt(Character.toString(mot.charAt(a+2)));
+						}
+					}
+				}
+				drap = true;
+			}
+			
+			if(!drap) {
+				if(nbcol != 0){
+					for(int x = 0; x < nbcol; x++) {
+						tab[i][j]=mot;
+						//System.out.println(" "+tab[i][j]);
+						j++;
+					}
+				}
+				
+				if(nbrow != 0){
+					for(int x = 0; x < nbcol - 1; x++) {
+						tab[i+x][j]=mot;
+						//System.out.println(" "+tab[i+x][j]);
+					}
+				}
+				
+				tab[i][j] = mot;
+				//System.out.println(" "+tab[i][j]);
+				j++;
+			}
+			drap=false;
+		}
+		return j;
+	}
+	
+	/**
+	 * Verification qu une cellule n est pas vide
+	 * @param i
+	 * @param j
+	 * @return
+	 */
+	public int verifTabVide(int i, int j) {
+		
+		j++;
+		if(tab[i][j] != "VIDE") {
+			verifTabVide(i, j);
+		}
+		
+		return j;
+	}
+	
+	/**
+	 * Supprimer les point virgule des lien [[]]
 	 * @param ligne
 	 * @return
 	 */
@@ -168,24 +283,86 @@ public class Donnee_Wikitable extends Donnee{
 	}
 	
 	/**
-	 * Recupere la premiere ligne du tableau
+	 * Supprimer les point virgule des lien {{}}
 	 * @param ligne
 	 * @return
 	 */
-	public String recupPremiereLigneTableau(String ligne) {
-		
+	public String supprimePointVirguleLienMoustache(String ligne) {
+		boolean inter = false;
 		for (int i=0; i < ligne.length(); i++){
-			if (ligne.charAt(i) == '{' && ligne.charAt(i+1) == '|') {
-				ligne= ligne.substring(i+1,ligne.length());	
+			if (ligne.charAt(i) == '{') {
+				inter = true;
 			}
-			
+			if(inter && ligne.charAt(i) == ';') {
+				ligne= ligne.substring(0, i-1)+"/"+ligne.substring(i+1,ligne.length());
+			}
+			if(inter && ligne.charAt(i) == '}') {
+				inter=false;
+			}
+				
 		}
-		
-		System.out.println(ligne);
-		
+		ligne = ligne.replaceAll("\\{", "");
+		ligne = ligne.replaceAll("\\}", "");
 		return ligne;
 	}
 	
+	/**
+	 * supprime class="wikitable"
+	 * @param ligne
+	 * @return
+	 */
+	public String supprimeClassWikitable(String ligne) {
+		boolean okay = true;
+		boolean drap = false;
+		for (int i=0; i < ligne.length(); i++){
+			if (ligne.charAt(i) == ';' && okay==true) {
+				ligne= ligne.substring(i+1,ligne.length());
+				okay=false;
+				drap = true;
+			}			
+		}
+		
+		if(!drap) {
+			ligne="c";
+		}
+		return ligne;
+	}
+	
+	/**
+	 * Ajoute un retour a la ligne apres le titre d un tableau
+	 * @param ligne
+	 * @return
+	 */
+	public String ajouteRetourAlaLigneApresTitre(String ligne) {
+		
+		boolean drap = false;
+		
+		for (int i=0; i < ligne.length(); i++){
+			if (ligne.charAt(i) == '+') {
+				drap = true;
+			}
+			if (ligne.charAt(i) == '!' && drap == true) {
+				ligne= ligne.substring(1,i-1)+"\n"+ligne.substring(i+1,ligne.length());
+				drap = false;
+			}			
+		}
+		return ligne;
+	}
+	
+	/**
+	 * Supprime les espaces en debut de ligne
+	 * @param ligne
+	 * @return
+	 */
+	private String supprimerEspaceDebut(String ligne) {
+		int i = 0;
+		while(ligne.startsWith(" ") || ligne.startsWith("	")) {
+			ligne = ligne.substring(i+1,ligne.length());
+			i++;
+		}
+		return ligne;
+	}
+
 	
 
 	/**
@@ -201,16 +378,16 @@ public class Donnee_Wikitable extends Donnee{
 		return true;
 	}
 	
-	@Override
-	public int getNbTableaux() {
-		return StringUtils.countMatches("{|", wikitable);
-	}
-
 	public int getColonnesEcrites() {
 		return colonnesEcrites;
 	}
 
 	public int getLignesEcrites() {
 		return lignesEcrites;
+	}
+
+	@Override
+	public int getNbTableaux(Document page) {
+		return StringUtils.countMatches("{|", wikitable);
 	}
 }
