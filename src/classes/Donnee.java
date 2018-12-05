@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.json.JSONException;
+import org.jsoup.nodes.Document;
 
 import exceptions.ArticleInexistantException;
 import exceptions.ConversionInvalideException;
@@ -82,7 +83,7 @@ public abstract class Donnee {
 	 */
 	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
 
-	public abstract int getNbTableaux();
+	public abstract int getNbTableaux(Document page);
 	
 	/**
 	 * Demarre le chronometre en back

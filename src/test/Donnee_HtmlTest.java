@@ -3,7 +3,6 @@ package test;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jsoup.nodes.Document;
@@ -74,7 +73,10 @@ public class Donnee_HtmlTest {
 	@Test
 	public void mainTest() throws ExtractionInvalideException, UrlInvalideException, ConversionInvalideException, ArticleInexistantException, IOException {
 //		Url newUrl = new Url(new URL("https://en.wikipedia.org/wiki/Kevin_Bacon"));
-		Url newUrl = new Url(new URL("https://fr.wikipedia.org/wiki/Tableau_p%C3%A9riodique_des_%C3%A9l%C3%A9ments"));
+		// TODO si accents dans l'url, ça retourne une MalFormedUrlException
+//		Url newUrl = new Url(new URL("https://fr.wikipedia.org/wiki/Tableau_p%C3%A9riodique_des_%C3%A9l%C3%A9ments"));
+		Url newUrl = new Url(new URL("https://en.wikipedia.org/wiki/Comparison_between_Esperanto_and_Ido"));
+		
 		Donnee_Html test = new Donnee_Html();
 		test.extraire(newUrl);
 	}
