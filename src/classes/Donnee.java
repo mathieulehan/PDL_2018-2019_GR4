@@ -5,9 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONException;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import exceptions.ArticleInexistantException;
 import exceptions.ConversionInvalideException;
@@ -23,6 +28,102 @@ import exceptions.UrlInvalideException;
 public abstract class Donnee {
 
 	private long tempsOriginal;
+	private Map<Integer, Integer> nbLignesTableaux = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> nbColonnesTableaux = new HashMap<Integer, Integer>();;
+
+	public Map<Integer, Integer> getNbLignesTableaux() {
+		return nbLignesTableaux;
+	}
+
+	public Map<Integer, Integer> getNbColonnesTableaux() {
+		return nbColonnesTableaux;
+	}
+
+	/**
+	 * A partir d'une Url, determine de combien de lignes et de colonnes
+	 * sera compose le csv en sortie, en prenant en compte les rowspans et colspans
+	 * @param url l'url de la page wikipedia
+	 * @throws MalformedURLException
+	 * @throws UrlInvalideException
+	 * @throws ExtractionInvalideException
+	 */
+	public void nbLignesColonnes(Url url) throws MalformedURLException, UrlInvalideException, ExtractionInvalideException {
+		if (url.estUrlValide()) {
+			String langue = url.getLangue();
+			String titre = url.getTitre();
+			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
+			String donneeHTML = recupContenu(page);
+			Document htmlParse = Jsoup.parseBodyFragment(donneeHTML);
+			Elements wikitables = htmlParse.getElementsByClass("wikitable");
+			int nbTableaux = getNbTableaux(htmlParse);
+			// On parcoure l'ensemble des tableaux de la page
+			for (int i = 0 ; i < nbTableaux ; i++) {
+				int[] nbLignesColonnes = getNbLignesColonnes(wikitables.get(i));
+				nbLignesTableaux.put(i, nbLignesColonnes[0]);
+				nbColonnesTableaux.put(i, nbLignesColonnes[1]);
+			}
+		}
+	}
+
+	/**
+	 * Determine le nombre de lignes et de colonnes qu'une wikitable possedera une fois parsee en CSV
+	 * @param wikitable
+	 * @return
+	 */
+	int[] getNbLignesColonnes(Element wikitable) {
+		int[] nbLignesColonnes = new int[2];
+		// Calcul du nombre de lignes
+		Elements lignes = wikitable.getElementsByTag("tr");
+		int nbLignes = lignes.size();
+		// Calcul du nombre de colonnes
+		int nbColonnesMax = 0;
+		int nbColonnes = 0;
+		for (int i = 0; i < lignes.size(); i++) {
+			// On va chercher la ligne avec le plus grand nombre de colonnes
+			nbColonnes = lignes.get(i).select("td, th").size() + getNbColonnesAjouteesColspans(lignes.get(i));
+			if(nbColonnes > nbColonnesMax) {
+				nbColonnesMax = nbColonnes;
+			}
+		}
+
+		Elements rowspans = wikitable.getElementsByAttribute("rowspan");
+
+		// nombre de lignes total ajoutees par les rowspans	
+		int totalRowspans = getNbLignesAjouteesRowspans(rowspans);
+
+		nbLignesColonnes[0] = nbLignes + totalRowspans;
+		nbLignesColonnes[1] = nbColonnesMax;
+
+		return nbLignesColonnes;
+	}
+
+	/**
+	 * Renvoie le nombre de lignes rajoutees par les rowspans pour un tableau
+	 * @param rowspans
+	 * @return
+	 */
+	private int getNbLignesAjouteesRowspans(Elements rowspans) {
+		int totalRowspans = 0;
+		for (Element rowspan : rowspans) {
+			int valueRowspan = Integer.parseInt(rowspan.attr("rowspan"));
+			totalRowspans += valueRowspan -1;
+		}
+		return totalRowspans;
+	}
+
+	/**
+	 * Renvoie le nombre de colonnes rajoutees par les colspans dans un tableau
+	 * @param colspans
+	 * @return
+	 */
+	private int getNbColonnesAjouteesColspans(Element ligne) {
+		int totalColspans = 0;
+		for (Element colspan : ligne.getElementsByAttribute("colspan")) {
+			int valueColspan = Integer.parseInt(colspan.attr("colspan"));
+			totalColspans += valueColspan-1;
+		}
+		return totalColspans;
+	}
 
 	/**
 	 * Extraction des donnees
@@ -84,7 +185,7 @@ public abstract class Donnee {
 	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
 
 	public abstract int getNbTableaux(Document page);
-	
+
 	/**
 	 * Demarre le chronometre en back
 	 */

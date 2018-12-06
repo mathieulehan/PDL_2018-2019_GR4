@@ -2,6 +2,8 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
@@ -72,13 +74,15 @@ public class Donnee_HtmlTest {
 
 	@Test
 	public void mainTest() throws ExtractionInvalideException, UrlInvalideException, ConversionInvalideException, ArticleInexistantException, IOException {
-//		Url newUrl = new Url(new URL("https://en.wikipedia.org/wiki/Kevin_Bacon"));
-		// TODO si accents dans l'url, ça retourne une MalFormedUrlException
-//		Url newUrl = new Url(new URL("https://fr.wikipedia.org/wiki/Tableau_p%C3%A9riodique_des_%C3%A9l%C3%A9ments"));
-		Url newUrl = new Url(new URL("https://en.wikipedia.org/wiki/Comparison_between_Esperanto_and_Ido"));
-		
-		Donnee_Html test = new Donnee_Html();
-		test.extraire(newUrl);
+		String BASE_WIKIPEDIA_URL = "src/output/url_file.txt";
+		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
+	    String url;
+	    while ((url = br.readLine()) != null) {
+	    	Url WikiUrl = new Url(new URL(url));
+			Donnee_Html test = new Donnee_Html();
+			test.extraire(WikiUrl);
+	    }
+	    br.close();
 	}
 
 }
