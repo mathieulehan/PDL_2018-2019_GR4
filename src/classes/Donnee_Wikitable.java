@@ -87,6 +87,7 @@ public class Donnee_Wikitable extends Donnee{
         
 		//if(pageComporteTableau()){
         wikitable = wikitable.replaceAll("\n", "");
+        wikitable = wikitable.replaceAll("style=\"text-align:center\"", "");
         wikitable = wikitable.replaceAll("\n", "");
         wikitable = wikitable.replaceAll("(\\|\\|-)", "\\|\\.");
         wikitable = wikitable.replaceAll(";", "");
@@ -183,24 +184,27 @@ public class Donnee_Wikitable extends Donnee{
 		String[] mots = ligne.split(";");
 		int nbrow = 0;
 		int nbcol = 0;
-		boolean drap = false;
+		boolean drap = false, col = false, row = false;
 		for(String mot : mots) {
 			
-			if(tab[i][j] != "VIDE") {
-				j = verifTabVide(i, j);
+			while(tab[i][j] != "VIDE") {
+				j++;
 			}
-			
+						
 			if(mot.contains("colspan")) {
 				mot = mot.replaceAll("colspan", ",");
 				for (int a=0; a < mot.length(); a++){
 					if (mot.charAt(a) == ',' && mot.charAt(a+1) == '=') {
 						if (mot.charAt(a+2) == '"') {
 							nbcol = Integer.parseInt(Character.toString(mot.charAt(a+3)));
+							mot = mot.substring(a+5, mot.length());
 						}else {
 							nbcol = Integer.parseInt(Character.toString(mot.charAt(a+2)));
+							mot = mot.substring(a+3, mot.length());
 						}
 					}
 				}
+				col = true;
 				drap = true;
 			}
 			if(mot.contains("rowspan")) {
@@ -214,47 +218,48 @@ public class Donnee_Wikitable extends Donnee{
 						}
 					}
 				}
+				row = true;
 				drap = true;
+				
 			}
-			
 			if(!drap) {
-				if(nbcol != 0){
-					for(int x = 0; x < nbcol; x++) {
-						tab[i][j]=mot;
+				
+				if(row && col) {
+					for(int x = 0; x < nbrow; x++) {
+						for(int y = 0; y < nbcol; y++) {
+							tab[i+x][j+y]=mot;
+						}
+					}
+					j+=nbcol;
+				}else {
+					if(col){
+						for(int x = 0; x < nbcol; x++) {
+							tab[i][j]=mot;
+							//System.out.println(" "+tab[i][j]);
+							j++;
+						}
+					}
+					
+					if(row){
+						for(int x = 0; x < nbrow; x++) {
+							tab[i+x][j]=mot;
+							//System.out.println(" "+tab[i+x][j]);
+						}
+						nbrow=0;
+						j++;
+					}
+
+					if(!col && !row){
+						tab[i][j] = mot;
 						//System.out.println(" "+tab[i][j]);
 						j++;
 					}
 				}
-				
-				if(nbrow != 0){
-					for(int x = 0; x < nbcol - 1; x++) {
-						tab[i+x][j]=mot;
-						//System.out.println(" "+tab[i+x][j]);
-					}
-				}
-				
-				tab[i][j] = mot;
-				//System.out.println(" "+tab[i][j]);
-				j++;
+				col = false;
+				row = false;
 			}
 			drap=false;
 		}
-		return j;
-	}
-	
-	/**
-	 * Verification qu une cellule n est pas vide
-	 * @param i
-	 * @param j
-	 * @return
-	 */
-	public int verifTabVide(int i, int j) {
-		
-		j++;
-		if(tab[i][j] != "VIDE") {
-			verifTabVide(i, j);
-		}
-		
 		return j;
 	}
 	
@@ -323,7 +328,7 @@ public class Donnee_Wikitable extends Donnee{
 		}
 		
 		if(!drap) {
-			ligne="c";
+			ligne=" ";
 		}
 		return ligne;
 	}
