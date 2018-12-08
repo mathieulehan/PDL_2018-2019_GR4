@@ -86,8 +86,10 @@ public class Donnee_WikitableTest {
 		URL monUrl;
 		String contenu = "", wikitable = "";
 		try {
-			//https://fr.wikipedia.org/w/api.php?action=parse&page=Kevin_Bacon&prop=wikitext&format=json
-			//
+			//Comparison_between_Esperanto_and_Ido
+			//Comparison_between_Esperanto_and_Novial
+			//Comparison_between_Ido_and_Interlingua
+			//Comparison_between_Ido_and_Novial
 			monUrl = new URL("https://en.wikipedia.org/w/api.php?action=parse&page=Comparison_between_Esperanto_and_Ido&prop=wikitext&format=json");
 			Url newUrl = new Url(monUrl);
 			Donnee_Wikitable test = new Donnee_Wikitable();
@@ -98,7 +100,7 @@ public class Donnee_WikitableTest {
 			}
 			try {
 				wikitable = test.jsonVersWikitable(contenu);			
-				test.wikitableEnTeteVersCSV("titre",wikitable);
+				test.wikitableEnTeteVersCSV(newUrl.getTitre(),wikitable);
 
 			}catch(ExtractionInvalideException e) {
 				e.printStackTrace();

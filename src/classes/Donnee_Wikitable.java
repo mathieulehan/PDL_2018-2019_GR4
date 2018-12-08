@@ -31,7 +31,7 @@ public class Donnee_Wikitable extends Donnee{
 	public Donnee_Wikitable(){
 		this.wikitable = "";
 		
-		this.tab = new String[100][100];
+		this.tab = new String[500][500];
 
 		initTab();
 		
@@ -74,123 +74,130 @@ public class Donnee_Wikitable extends Donnee{
 			throw new ExtractionInvalideException("Extraction JSON vers Wikitext echouee");
 		}
 	}
-
+	
 	/**
 	 * 
 	 * @param wikitable
 	 * @throws IOException 
 	 * @throws ExtractionInvalideException
 	 */
-	// ATTENTION !! Si tableau avec ! ça ne marche pas
 	public void wikitableEnTeteVersCSV(String titre, String wikitable) throws IOException {
 		int i = 0,j = 0, nbtab = 0;
-        
-		//if(pageComporteTableau()){
-        wikitable = wikitable.replaceAll("\n", "");
-        wikitable = wikitable.replaceAll("style=\"text-align:center\"", "");
-        wikitable = wikitable.replaceAll("\n", "");
-        wikitable = wikitable.replaceAll("(\\|\\|-)", "\\|\\.");
-        wikitable = wikitable.replaceAll(";", "");
-		wikitable = wikitable.replaceAll("align=\"center\"", "");
-		wikitable = wikitable.replaceAll("<br />", "");
-		wikitable = wikitable.replaceAll("</center>", "");
-		wikitable = wikitable.replaceAll("<center>", "");
-        String[] tableaux = wikitable.split("(\\{\\|)|(\\|\\})");
-        
-        for (String tableau : tableaux) {
-			String[] lignes = tableau.split("(\\|-)");
-			for (String ligne : lignes) {
-
-				if(ligne.startsWith(" ") || ligne.startsWith("	")) {
-					ligne = supprimerEspaceDebut(ligne);
-				}
-				//System.out.println(ligne);
-				if(ligne.startsWith("|") || ligne.startsWith(" |") || ligne.startsWith(" | ") || ligne.startsWith("!") || ligne.contains("! ") || ligne.contains(" !") || ligne.contains("wikitable")) {
-					if(ligne.contains("|+")) {
-						ligne = ajouteRetourAlaLigneApresTitre(ligne);
-					}
-					ligne = ligne.replaceAll("(\\|\\|)", ";");
-					ligne = ligne.replaceAll("(\\|)", ";");
-					ligne = ligne.replaceAll("(!!)", ";");
-					ligne = ligne.replaceAll("!", ";");
-					if(ligne.contains("class=\"wikitable\"")) {
-						ligne = supprimeClassWikitable(ligne);
-					}
-					if(ligne.contains("[")) {
-						ligne = supprimePointVirguleLien(ligne);
-					}
-					if(ligne.contains("{")) {
-						ligne = supprimePointVirguleLienMoustache(ligne);
-					}
-					ligne = ligne.substring(1, ligne.length());
-					//System.out.println(ligne);
-					j= remplirTableau(j,i, ligne);
-					maxColone = j;
-					j=0;
-				}
-				i++;
+		boolean first = false, tableau = false, dansCell = false, drap = false;
+		
+		wikitable = wikitableReplace(wikitable);
+						
+		String[] lignes = wikitable.split("\n");
+		
+		for (String ligne : lignes) {
+			if(ligne.startsWith(" ") || ligne.startsWith("	")) {
+				ligne = supprimerEspaceDebut(ligne);
+			}
+			//System.out.println(ligne);
+			if(ligne.startsWith("{|")) {
+				i=0;
+				nbtab++;
+				first = true;
+				tableau = true;
 			}
 			
-			if(tableau.contains("wikitable")) {
-				nbtab++;
-				maxLigne = i;
-				//System.out.println(nbtab+" : "+tableau);
-				ecrireCsv(titre,nbtab);
-				initTab();
+			if(ligne.startsWith("!") && tableau) {
+				if(ligne.contains("!!")) {
+					String[] mots = ligne.split("(!!)");
+					for(String mot : mots) {
+						while(tab[i][j] != "VIDE") {
+							j++;
+						}
+						tab[i][j] = mot;
+						j++;
+					}
+				}else {
+					if(ligne.contains("colspan") || ligne.contains("rowspan")) {
+						j = gererColspanEtRowspan(ligne, i, j);
+					}else {
+						while(tab[i][j] != "VIDE") {
+							j++;
+						}
+						ligne = ligne.substring(1, ligne.length());
+						tab[i][j] = ligne;
+						j++;
+					}
+				}
+				first = false;
+			}else if(ligne.startsWith("|") && tableau) {
+				if(ligne.startsWith("|-")) {
+					if(!first) {
+						i++;
+						if(j>maxColone) {
+							maxColone = j;
+						}
+					}
+					j=0;
+				}else if(ligne.contains("|}")) {
+						if(drap) {
+							j++;
+						}
+						if(j>maxColone) {
+							maxColone = j;
+						}
+						maxLigne = i+1;
+						ecrireCsv(titre, nbtab);
+						initTab();
+						maxColone = 0;
+						maxLigne = 0;
+						tableau = false;
+						j=0;
+						i=0;
+				}else if(ligne.startsWith("|+")){
+						ligne = "";
+				}else {
+					ligne = ligne.substring(1, ligne.length());
+					if(ligne.contains("||")) {
+						String[] mots = ligne.split("(\\|\\|)");
+						for(String mot : mots) {
+							tab[i][j] = mot;
+							j++;
+						}
+					}else {
+						if(ligne.contains("colspan") || ligne.contains("rowspan")) {
+							j = gererColspanEtRowspan(ligne, i, j);
+						}else {
+							
+							while(tab[i][j] != "VIDE") {
+								j++;
+							}
+							tab[i][j] = ligne;
+							j++;
+						}
+					}
+				}
+				first = false;
+				dansCell = false;
+				drap = false;
+			}else if(tableau && !first) {
+				if(!dansCell) {
+					j--;
+					dansCell = true;
+				}
+				tab[i][j] = tab[i][j]+ligne;
+				drap = true;
 			}
-			i=0;
-        }
-		//}
-	}
-	
-	/**
-	 * Initialise le tableau
-	 */
-	public void initTab() {
-		for (String[] ligne: tab) {
-			java.util.Arrays.fill(ligne,"VIDE");
 		}
 	}
 	
-	/**
-	 * ecrit les fichier csv
-	 * @param titre
-	 * @param nbtab
-	 * @throws IOException
-	 */
-	public void ecrireCsv(String titre, int nbtab) throws IOException{
-		String outputPath = "src/ressources/" + "titre" + nbtab + ".csv";
-		FileOutputStream outputStream = new FileOutputStream(outputPath);
-		OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
-		
-		for(int k = 0; k < maxLigne; k++) {
-			for(int l = 0; l < maxColone; l++) {
-				//System.out.println(tab[k][l].concat(";"));
-				writer.write(tab[k][l].concat(";"));
-			}
-			writer.write("\n");
-		}	
-		writer.close();
-	}
-	
-	/**
-	 * Permet de gerer les colspan et les rowspan
-	 * @param j
-	 * @param i
-	 * @param ligne
-	 * @return
-	 */
-	public int remplirTableau(int j ,int i, String ligne) {
-		String[] mots = ligne.split(";");
+	public int gererColspanEtRowspan(String ligne, int i, int j) {
+		if(ligne.endsWith("|")) {
+			ligne = ligne+" ";
+		}
+		String[] mots = ligne.split("\\|");
 		int nbrow = 0;
 		int nbcol = 0;
 		boolean drap = false, col = false, row = false;
 		for(String mot : mots) {
-			
 			while(tab[i][j] != "VIDE") {
 				j++;
 			}
-						
+					
 			if(mot.contains("colspan")) {
 				mot = mot.replaceAll("colspan", ",");
 				for (int a=0; a < mot.length(); a++){
@@ -220,7 +227,6 @@ public class Donnee_Wikitable extends Donnee{
 				}
 				row = true;
 				drap = true;
-				
 			}
 			if(!drap) {
 				
@@ -235,7 +241,6 @@ public class Donnee_Wikitable extends Donnee{
 					if(col){
 						for(int x = 0; x < nbcol; x++) {
 							tab[i][j]=mot;
-							//System.out.println(" "+tab[i][j]);
 							j++;
 						}
 					}
@@ -243,7 +248,6 @@ public class Donnee_Wikitable extends Donnee{
 					if(row){
 						for(int x = 0; x < nbrow; x++) {
 							tab[i+x][j]=mot;
-							//System.out.println(" "+tab[i+x][j]);
 						}
 						nbrow=0;
 						j++;
@@ -251,7 +255,6 @@ public class Donnee_Wikitable extends Donnee{
 
 					if(!col && !row){
 						tab[i][j] = mot;
-						//System.out.println(" "+tab[i][j]);
 						j++;
 					}
 				}
@@ -264,112 +267,82 @@ public class Donnee_Wikitable extends Donnee{
 	}
 	
 	/**
-	 * Supprimer les point virgule des lien [[]]
-	 * @param ligne
-	 * @return
+	 * Initialise le tableau
 	 */
-	public String supprimePointVirguleLien(String ligne) {
-		boolean inter = false;
-		for (int i=0; i < ligne.length(); i++){
-			if (ligne.charAt(i) == '[') {
-				inter = true;
-			}
-			if(inter && ligne.charAt(i) == ';') {
-				ligne= ligne.substring(0, i-1)+"/"+ligne.substring(i+1,ligne.length());
-			}
-			if(inter && ligne.charAt(i) == ']') {
-				inter=false;
-			}
-				
+	public void initTab() {
+		for (String[] ligne: tab) {
+			java.util.Arrays.fill(ligne,"VIDE");
 		}
-		ligne = ligne.replaceAll("\\[", "");
-		ligne = ligne.replaceAll("\\]", "");
-		return ligne;
 	}
 	
 	/**
-	 * Supprimer les point virgule des lien {{}}
-	 * @param ligne
-	 * @return
+	 * ecrit les fichier csv
+	 * @param titre
+	 * @param nbtab
+	 * @throws IOException
 	 */
-	public String supprimePointVirguleLienMoustache(String ligne) {
-		boolean inter = false;
-		for (int i=0; i < ligne.length(); i++){
-			if (ligne.charAt(i) == '{') {
-				inter = true;
-			}
-			if(inter && ligne.charAt(i) == ';') {
-				ligne= ligne.substring(0, i-1)+"/"+ligne.substring(i+1,ligne.length());
-			}
-			if(inter && ligne.charAt(i) == '}') {
-				inter=false;
-			}
-				
-		}
-		ligne = ligne.replaceAll("\\{", "");
-		ligne = ligne.replaceAll("\\}", "");
-		return ligne;
-	}
-	
-	/**
-	 * supprime class="wikitable"
-	 * @param ligne
-	 * @return
-	 */
-	public String supprimeClassWikitable(String ligne) {
-		boolean okay = true;
+	public void ecrireCsv(String titre, int nbtab) throws IOException{
 		boolean drap = false;
-		for (int i=0; i < ligne.length(); i++){
-			if (ligne.charAt(i) == ';' && okay==true) {
-				ligne= ligne.substring(i+1,ligne.length());
-				okay=false;
-				drap = true;
-			}			
-		}
+		String outputPath = "src/ressources/" + titre + nbtab + ".csv";
+		FileOutputStream outputStream = new FileOutputStream(outputPath);
+		OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
 		
-		if(!drap) {
-			ligne=" ";
-		}
-		return ligne;
-	}
-	
-	/**
-	 * Ajoute un retour a la ligne apres le titre d un tableau
-	 * @param ligne
-	 * @return
-	 */
-	public String ajouteRetourAlaLigneApresTitre(String ligne) {
-		
-		boolean drap = false;
-		
-		for (int i=0; i < ligne.length(); i++){
-			if (ligne.charAt(i) == '+') {
-				drap = true;
+		for(int k = 0; k < maxLigne; k++) {
+			for(int l = 0; l < maxColone; l++) {
+				//System.out.println(tab[k][l].concat(";"));
+				if(tab[k][l].startsWith("!")) {
+					tab[k][l]=tab[k][l].substring(1, tab[k][l].length());
+				}
+				if(tab[k][l] != "VIDE") {
+					writer.write(tab[k][l].concat(";"));
+				}else {
+					drap = true;
+				}
 			}
-			if (ligne.charAt(i) == '!' && drap == true) {
-				ligne= ligne.substring(1,i-1)+"\n"+ligne.substring(i+1,ligne.length());
-				drap = false;
-			}			
-		}
-		return ligne;
+			if(!drap) {
+				writer.write("\n");
+			}else {
+				maxLigne--;
+			}
+		}	
+		writer.close();
 	}
-	
+
 	/**
 	 * Supprime les espaces en debut de ligne
 	 * @param ligne
 	 * @return
 	 */
 	private String supprimerEspaceDebut(String ligne) {
-		int i = 0;
 		while(ligne.startsWith(" ") || ligne.startsWith("	")) {
-			ligne = ligne.substring(i+1,ligne.length());
-			i++;
+			ligne = ligne.substring(1,ligne.length());
 		}
 		return ligne;
 	}
+	
+	public String wikitableReplace(String wikitable) {
+        wikitable = wikitable.replaceAll("scope=col", "");
+        wikitable = wikitable.replaceAll("style=\"text-align:center\"", "");
+        wikitable = wikitable.replaceAll("align=\"center\"\\|", "");
+        wikitable = wikitable.replaceAll("align=\"center\"", "");
+        wikitable = wikitable.replaceAll("align=center", "");
+        wikitable = wikitable.replaceAll("align=\"right\"", "");
+        wikitable = wikitable.replaceAll("align=right", "");
+        wikitable = wikitable.replaceAll("align=\"left\"", "");
+        wikitable = wikitable.replaceAll("align=left", "");
+        wikitable = wikitable.replaceAll("align=\"top\"", "");
+        wikitable = wikitable.replaceAll("align=top", "");
+        wikitable = wikitable.replaceAll("&nbsp;", " ");
+		wikitable = wikitable.replaceAll(";", ",");
+		wikitable = wikitable.replaceAll("<br />", "");
+		wikitable = wikitable.replaceAll("</center>", "");
+		wikitable = wikitable.replaceAll("<center>", "");
+		wikitable = wikitable.replaceAll("\\|-/", "\\| -/");
+		
+		return wikitable;
+	}
 
 	
-
 	/**
 	 * Verification de la presence de tableaux dans les donnees
 	 * @return boolean
