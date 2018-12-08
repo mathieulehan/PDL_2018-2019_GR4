@@ -1,17 +1,13 @@
-package classes;
+package com.wikipediaMatrix;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URL;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import exceptions.ArticleInexistantException;
-import exceptions.ConversionInvalideException;
-import exceptions.ExtractionInvalideException;
-import exceptions.UrlInvalideException;
 
 /**
  * Classe permettant de recuperer et convertir des tables html en CSV
@@ -24,6 +20,7 @@ public class Donnee_Html extends Donnee{
 	 * Le HTML de la page wikipedia
 	 */
 	private String donneeHTML;
+	private int maxColonnesLigne;
 	private int lignesEcrites;
 	private int colonnesEcrites;
 	private int ligneActuelle;
@@ -32,6 +29,30 @@ public class Donnee_Html extends Donnee{
 
 	public Donnee_Html() {
 		this.donneeHTML = "";
+	}
+
+	public String[][] getTableau(){
+		return this.tableau;
+	}
+
+	public void setTableau(String[][] tableau) {
+		this.tableau = tableau;
+	}
+
+	public void setColonneActuelle(int numColonne) {
+		this.colonneActuelle = numColonne;
+	}
+
+	public void setLigneActuelle(int numLigne) {
+		this.ligneActuelle = numLigne;
+	}
+
+	public String getHtml() {
+		return this.donneeHTML;
+	}
+
+	public void setHtml(String html) {
+		this.donneeHTML = html;
 	}
 
 	/**
@@ -45,21 +66,14 @@ public class Donnee_Html extends Donnee{
 	 */
 	@Override
 	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, ConversionInvalideException, ArticleInexistantException, IOException {
-		if(url.estUrlValide()) {
-			start();
-			String langue = url.getLangue();
-			String titre = url.getTitre();
-			/* On recupere le nombre calcule de lignes et de colonnes de tous
-			les tableaux de l'url*/
+
+		start();
+		supprimerPointsVirgule(this.donneeHTML);
+		if(pageComporteTableau()){
 			nbLignesColonnes(url);
-			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			System.out.println(titre);
-			this.donneeHTML = recupContenu(page);
-			supprimerPointsVirgule(this.donneeHTML);
-			if(pageComporteTableau()){
-				String titreSain = titre.replaceAll("[\\/\\?\\:\\<\\>]", "");
-				htmlVersCSV(titreSain);
-			}
+			String titre = url.getTitre();
+			String titreSain = titre.replaceAll("[\\/\\?\\:\\<\\>]", "");
+			htmlVersCSV(titreSain);
 		}
 	}
 
@@ -73,12 +87,14 @@ public class Donnee_Html extends Donnee{
 
 		Document page = Jsoup.parseBodyFragment(this.donneeHTML);
 		Elements wikitables = page.getElementsByClass("wikitable");
-		int nbTableaux = getNbTableaux(page);
+		Elements tablesNonWiki = page.select("table:not([^])");
+		for (Element element : tablesNonWiki) {
+			wikitables.add(element);
+		}
+		int nbTableaux = getNbTableaux(this.donneeHTML);
 
 		for (int i = 0 ; i < nbTableaux ; i++) {
-
 			String outputPath = "src/output/" + titre + i + ".csv";
-			System.out.println("Tableau n° " + i);
 			FileOutputStream outputStream = new FileOutputStream(outputPath);
 			OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
 			// On recupere le nmobre de lignes et de colonnes du tableau en cours
@@ -104,9 +120,10 @@ public class Donnee_Html extends Donnee{
 	 * et qui appelle les methodes permettant de gerer les colspans et rowspans
 	 * @param table
 	 */
-	public void stockerLignes(Element table) {
+	private void stockerLignes(Element table) {
+		this.maxColonnesLigne = 0;
 		Elements lignes = table.getElementsByTag("tr");
-		// On parcoure les lignes de la wikitable
+		// On parcoure les lignes de la wikitable1800
 		for (Element ligne : lignes) {
 			this.colonneActuelle = 0;
 			Elements cellules = ligne.select("td, th");
@@ -115,18 +132,22 @@ public class Donnee_Html extends Donnee{
 			for (Element cellule : cellules) {
 				// Si on un colspan et un rowspan sur la meme cellule
 				if ((cellule.hasAttr("colspan")) & (cellule.hasAttr("rowspan"))){
-					int nbColspans = Integer.parseInt(cellule.attr("colspan"));
-					int nbRowspans = Integer.parseInt(cellule.attr("rowspan"));
+					String colspanValue = cellule.attr("colspan").replaceAll("[^0-9.]", "");
+					String rowspanValue = cellule.attr("rowspan").replaceAll("[^0-9.]", "");
+					int nbColspans = Integer.parseInt(colspanValue);
+					int nbRowspans = Integer.parseInt(rowspanValue);
 					gererColspansEtRowspans(nbRowspans, nbColspans, cellule);
 				}
 				// Si on a un rowspan uniquement
 				else if (cellule.hasAttr("rowspan")) {
-					int nbRowspans = Integer.parseInt(cellule.attr("rowspan"));
+					String rowspanValue = cellule.attr("rowspan").replaceAll("[^0-9.]", "");
+					int nbRowspans = Integer.parseInt(rowspanValue);
 					gererRowspans(nbRowspans, cellule, this.ligneActuelle);
 				}
 				// Si on a un colspan uniquement
 				else if (cellule.hasAttr("colspan")) {
-					int nbColspans = Integer.parseInt(cellule.attr("colspan"));
+					String colspanValue = cellule.attr("colspan").replaceAll("[^0-9.]", "");
+					int nbColspans = Integer.parseInt(colspanValue);
 					gererColspans(nbColspans, cellule, this.colonneActuelle);
 				}
 				// La cellule est 'normale'
@@ -137,19 +158,21 @@ public class Donnee_Html extends Donnee{
 					dans le cas d'un colspan par exemple*/
 				this.colonnesEcrites++;
 				this.colonneActuelle++;
+				if(this.colonneActuelle > this.maxColonnesLigne) this.maxColonnesLigne = this.colonneActuelle;
 			}
 			/* TODO : ici on incremente lignesEcrites de 1 seulement, alors qu'une cellule peut creer plusieurs lignes
 			dans le cas d'un rowspan par exemple*/
 			this.ligneActuelle++;
 			this.lignesEcrites++;
 		}
+		this.colonnesEcrites = this.maxColonnesLigne;
 	}
 
 	/**
 	 * Stocke la cellule dans une matrice a deux dimensions representant la wikitable
 	 * @param cellule la cellule a ajouter
 	 */
-	private void stockerCellule(Element cellule) {
+	public void stockerCellule(Element cellule) {
 		/* Si les coordonnees donnees en parametre sont deja reservees, on avance 
 		 	d'autant de colonnes qu'il faudra jusqu'a pouvoir stocker notre cellule*/
 		while(!this.tableau[this.ligneActuelle][this.colonneActuelle].equals("VIDE")) {
@@ -179,7 +202,9 @@ public class Donnee_Html extends Donnee{
 	private void stockerCelluleRowspan(Element cellule, int ligneActuelle) {
 		if (!this.tableau[ligneActuelle][this.colonneActuelle].equals("VIDE")) {
 		}
-		this.tableau[ligneActuelle][this.colonneActuelle] = cellule.text().concat("; ");
+		else {
+			this.tableau[ligneActuelle][this.colonneActuelle] = cellule.text().concat("; ");
+		}
 	}
 
 	private void stockerRowspanSuivantColspan(Element cellule, int ligneActuelle, int colonneActuelle) {
@@ -197,7 +222,6 @@ public class Donnee_Html extends Donnee{
 		for (int i = 0; i < this.tableau.length; i++) {
 			boolean contientInfos = ligneContientInfos(i);
 			for (int j = 0; j < this.tableau[i].length; j++) {
-				int longueur = this.tableau.length;
 				if (!this.tableau[i][j].equals("VIDE")) {
 					writer.write(this.tableau[i][j]);
 				}
@@ -217,17 +241,20 @@ public class Donnee_Html extends Donnee{
 	@Override
 	public boolean pageComporteTableau() throws ExtractionInvalideException {
 		Document page = Jsoup.parseBodyFragment(this.donneeHTML);
-		if(page.getElementsByTag("<table class=\"wikitable\">") == null){
-			throw new ExtractionInvalideException("Aucun tableau present dans la page");
+		if((!page.getElementsByClass("wikitable").isEmpty()) || (!page.select("table:not([^])").isEmpty())) {
+			return true;
 		}
-		return true;
+		else {
+			System.out.println(new ExtractionInvalideException("Aucun tableau present dans la page").getMessage());
+			return false;	
+		}
 	}
 
 	/**
 	 * Suppression des points virgules, interprete dans le csv comme un changement de colonne
 	 * @param html
 	 */
-	private void supprimerPointsVirgule(String html){
+	public void supprimerPointsVirgule(String html){
 		String newHtml = html.replaceAll(";", " ");
 		this.donneeHTML = newHtml;
 	}
@@ -304,8 +331,14 @@ public class Donnee_Html extends Donnee{
 	 * Renvoie le nombre de tableaux du fichier
 	 */
 	@Override
-	public int getNbTableaux(Document page) {
-		return page.getElementsByClass("wikitable").size();
+	public int getNbTableaux(String contenuPage) {
+		Document page = Jsoup.parseBodyFragment(contenuPage);
+		Elements wikitables = page.getElementsByClass("wikitable");
+		Elements tablesNonWiki = page.select("table:not([^])");
+		for (Element element : tablesNonWiki) {
+			wikitables.add(element);
+		}
+		return wikitables.size();
 	}
 
 	/**

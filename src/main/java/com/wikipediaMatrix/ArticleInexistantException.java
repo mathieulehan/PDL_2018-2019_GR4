@@ -1,4 +1,4 @@
-package exceptions; 
+package com.wikipediaMatrix; 
  
 public class ArticleInexistantException extends Exception { 
  

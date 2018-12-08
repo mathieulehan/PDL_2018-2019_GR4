@@ -1,4 +1,4 @@
-package classes;
+package com.wikipediaMatrix;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,11 +13,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import exceptions.ArticleInexistantException;
-import exceptions.ConversionInvalideException;
-import exceptions.ExtractionInvalideException;
-import exceptions.UrlInvalideException;
 
 /**
  * Classe abstraite pour recuperer les donnees
@@ -54,8 +49,14 @@ public abstract class Donnee {
 			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
 			String donneeHTML = recupContenu(page);
 			Document htmlParse = Jsoup.parseBodyFragment(donneeHTML);
+			// On recupere les wikitables
 			Elements wikitables = htmlParse.getElementsByClass("wikitable");
-			int nbTableaux = getNbTableaux(htmlParse);
+			// Ainsi que les tables classiques, sans attributs
+			Elements tablesNonWiki = htmlParse.select("table:not([^])");
+			for (Element element : tablesNonWiki) {
+					wikitables.add(element);
+			}
+			int nbTableaux = getNbTableaux(donneeHTML);
 			// On parcoure l'ensemble des tableaux de la page
 			for (int i = 0 ; i < nbTableaux ; i++) {
 				int[] nbLignesColonnes = getNbLignesColonnes(wikitables.get(i));
@@ -92,7 +93,7 @@ public abstract class Donnee {
 		int totalRowspans = getNbLignesAjouteesRowspans(rowspans);
 
 		nbLignesColonnes[0] = nbLignes + totalRowspans;
-		nbLignesColonnes[1] = nbColonnesMax;
+		nbLignesColonnes[1] = nbColonnesMax+1;
 
 		return nbLignesColonnes;
 	}
@@ -119,7 +120,8 @@ public abstract class Donnee {
 	private int getNbColonnesAjouteesColspans(Element ligne) {
 		int totalColspans = 0;
 		for (Element colspan : ligne.getElementsByAttribute("colspan")) {
-			int valueColspan = Integer.parseInt(colspan.attr("colspan"));
+			String colspanValue = colspan.attr("colspan").replaceAll("[^0-9.]", "");
+			int valueColspan = Integer.parseInt(colspanValue);
 			totalColspans += valueColspan-1;
 		}
 		return totalColspans;
@@ -184,7 +186,7 @@ public abstract class Donnee {
 	 */
 	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
 
-	public abstract int getNbTableaux(Document page);
+	public abstract int getNbTableaux(String contenuPage);
 
 	/**
 	 * Demarre le chronometre en back

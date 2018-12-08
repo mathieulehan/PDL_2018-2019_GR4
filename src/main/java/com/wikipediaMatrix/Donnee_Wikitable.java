@@ -1,4 +1,4 @@
-package classes;
+package com.wikipediaMatrix;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,9 +9,6 @@ import java.net.URL;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
-
-import exceptions.ExtractionInvalideException;
-import exceptions.UrlInvalideException;
 
 /**
  * Classe permettant de recuperer et convertir des tables HTML en CSV
@@ -37,6 +34,10 @@ public class Donnee_Wikitable extends Donnee{
 		
 	}
 
+	public String getContenu() {
+		return this.wikitable;
+	}
+	
 	/**
 	 * Recupere les donnees en JSON pour les mettre dans un CSV
 	 * @param url
@@ -159,7 +160,7 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws IOException
 	 */
 	public void ecrireCsv(String titre, int nbtab) throws IOException{
-		String outputPath = "src/ressources/" + "titre" + nbtab + ".csv";
+		String outputPath = "src/output/" + "titre" + nbtab + ".csv";
 		FileOutputStream outputStream = new FileOutputStream(outputPath);
 		OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
 		
@@ -392,7 +393,7 @@ public class Donnee_Wikitable extends Donnee{
 	}
 
 	@Override
-	public int getNbTableaux(Document page) {
-		return StringUtils.countMatches("{|", wikitable);
+	public int getNbTableaux(String contenuPage) {
+		return StringUtils.countMatches(contenuPage, "{|");
 	}
 }

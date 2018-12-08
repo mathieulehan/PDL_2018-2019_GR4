@@ -1,12 +1,9 @@
-package classes;
+package com.wikipediaMatrix;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import exceptions.ArticleInexistantException;
-import exceptions.UrlInvalideException;
 /**
  * Classe permettant de recuperer les informations d'une page via son url
  * Validation de l'url requise
@@ -50,7 +47,8 @@ public class Url {
 		titre = url.toString().substring(url.toString().lastIndexOf('/')+1);
 		// "\p{Graph}" -> chiffre, lettre, ponctuation
 		if (!titre.matches("^[\\p{Graph}å\\–]+$")) {
-			throw new MalformedURLException("Titre de la page invalide");
+			System.out.println(new MalformedURLException("Titre de la page invalide"));
+			return false;
 		}
 		return true;
 	}
@@ -65,7 +63,7 @@ public class Url {
 	 */
 	public boolean testerConnexionHTTP() throws ArticleInexistantException, IOException {
 		HttpURLConnection connexion = (HttpURLConnection)url.openConnection();
-		if (!(connexion.getResponseCode() == HttpURLConnection.HTTP_OK)) {
+		if ((connexion.getResponseCode() != HttpURLConnection.HTTP_OK)) {
 			throw new ArticleInexistantException("Aucun article disponible pour cette url");
 		}
 		connexion.disconnect();

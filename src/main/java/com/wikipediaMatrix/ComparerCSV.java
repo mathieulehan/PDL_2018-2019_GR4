@@ -1,6 +1,4 @@
-package classes;
-
-import exceptions.ResultatEstNullException;
+package com.wikipediaMatrix;
 
 /**
  * Classe permettant de recuperer dse statistiques sur les deux methodes de recuperation de table wikipedia,
@@ -42,8 +40,8 @@ public class ComparerCSV {
 		this.lignesWikitable = wikitable.getLignesEcrites();
 		this.colonnesHtml = html.getColonnesEcrites();
 		this.colonnesWikitable = wikitable.getColonnesEcrites();
-		this.tablesHtml = html.getNbTableaux();
-		this.tablesWikitext = wikitable.getNbTableaux();
+		this.tablesHtml = html.getNbTableaux(this.html.getHtml());
+		this.tablesWikitext = wikitable.getNbTableaux(this.wikitable.getContenu());
 	}
 	
 	public Donnee_Html getHtml() throws ResultatEstNullException {
@@ -57,12 +55,12 @@ public class ComparerCSV {
 	}
 
 	public long getTempsExeHtml() throws ResultatEstNullException {
-		if(tempsExeHtml != (long)tempsExeHtml) throw new ResultatEstNullException("tempsExeHtml n'est pas de type long");
+		if(tempsExeHtml != (int)tempsExeHtml) throw new ResultatEstNullException("tempsExeHtml n'est pas de type long");
 		return tempsExeHtml;
 	}
 
 	public long getTempsExeWikitable() throws ResultatEstNullException {
-		if(tempsExeWikitable != (long)tempsExeWikitable) throw new ResultatEstNullException("tempsExeWikitable n'est pas de type long");
+		if(tempsExeWikitable != (int)tempsExeWikitable) throw new ResultatEstNullException("tempsExeWikitable n'est pas de type long");
 		return tempsExeWikitable;
 	}
 

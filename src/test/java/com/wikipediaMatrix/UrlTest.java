@@ -1,16 +1,16 @@
-package test;
+package com.wikipediaMatrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.junit.Test;
-import classes.Url;
-import exceptions.ArticleInexistantException;
-import exceptions.UrlInvalideException;
+
+import org.junit.*;
 
 public class UrlTest {
 
@@ -26,10 +26,10 @@ public class UrlTest {
 		url.estUrlValide();
 	}
 
-	@Test(expected = MalformedURLException.class)
+	@Test
 	public void titre_inexistant() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://fr.wikipedia.org/wiki/"));
-		url.estUrlValide();
+		assertFalse(url.estUrlValide());
 	}
 
 	@Test
@@ -45,15 +45,15 @@ public class UrlTest {
 		url.estUrlValide();
 	}
 	
-	@Test(expected = MalformedURLException.class)
+	@Test
 	public void titre_langue_incomplet() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://.wikipedia.org/wiki/"));
-		url.estUrlValide();
+		assertFalse(url.estUrlValide());
 	}
 	
 	@Test
 	public void verification_336_urls_valides() throws UrlInvalideException, IOException   {
-		String BASE_WIKIPEDIA_URL = "src/ressources/url_file.txt";
+		String BASE_WIKIPEDIA_URL = "src/output/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;
 	    int nurl = 0;
@@ -68,7 +68,7 @@ public class UrlTest {
 	
 	@Test
 	public void tester_connexion_336_urls() throws UrlInvalideException, IOException {
-		String BASE_WIKIPEDIA_URL = "src/ressources/url_file.txt";
+		String BASE_WIKIPEDIA_URL = "src/output/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;
 	    int articleExistant = 0, articleInexistant = 0;
@@ -80,12 +80,11 @@ public class UrlTest {
 			} catch (ArticleInexistantException e) {
 				// TODO Auto-generated catch block
 				articleInexistant++;
-		    	System.out.println("Erreur connexion wikipedia : " + WikiUrl.getURL());
 			}
 	    }
 	    br.close();
 	    assertEquals(articleExistant, 314);
 	    assertEquals(articleInexistant, 22);
+	    System.out.println("URLs sans article : " + articleExistant);
 	}
-
 }

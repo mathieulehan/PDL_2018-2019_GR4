@@ -1,16 +1,11 @@
-package test;
+package com.wikipediaMatrix;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
-
-import classes.ComparerCSV;
-import classes.Donnee_Html;
-import classes.Donnee_Wikitable;
-import exceptions.ResultatEstNullException;
-import classes.Donnee;
 
 /**
  * Classe de tests unitaires JUnit, utilisant Mockito pour tester les methodes de la classe ComparerCSV 
@@ -23,7 +18,7 @@ public class ComparerCSVTest {
 	Donnee donneeTest = Mockito.mock(Donnee.class);
 	Donnee_Html donneeHtmlTest = Mockito.mock(Donnee_Html.class);
 	Donnee_Wikitable donneeWikitableTest = Mockito.mock(Donnee_Wikitable.class);
-
+	
 	/**
 	 * On teste tous les getters de ComparerCSV.
 	 * @throws ResultatEstNullException si un getter ne retourne pas la valeur attendue
@@ -34,14 +29,16 @@ public class ComparerCSVTest {
 		donneeHtmlTest et donneeWikitableTest et que l'on a donc recupere
 		plusieurs statistiques, auxquelles on est cense pouvoir acceder depuis un objet ComparerCSV.
 		 */
+		Mockito.when(donneeHtmlTest.getHtml()).thenReturn("");
+		Mockito.when(donneeWikitableTest.getContenu()).thenReturn("");
 		Mockito.when(donneeHtmlTest.getTime()).thenReturn((long) 100);
 		Mockito.when(donneeWikitableTest.getTime()).thenReturn((long) 150);
 		Mockito.when(donneeHtmlTest.getLignesEcrites()).thenReturn(25);
 		Mockito.when(donneeWikitableTest.getLignesEcrites()).thenReturn(20);
 		Mockito.when(donneeHtmlTest.getColonnesEcrites()).thenReturn(10);
 		Mockito.when(donneeWikitableTest.getColonnesEcrites()).thenReturn(8);
-		Mockito.when(donneeHtmlTest.getNbTableaux()).thenReturn(8);
-		Mockito.when(donneeWikitableTest.getNbTableaux()).thenReturn(7);
+		Mockito.when(donneeHtmlTest.getNbTableaux("")).thenReturn(8);
+		Mockito.when(donneeWikitableTest.getNbTableaux("")).thenReturn(7);
 		ComparerCSV comparerCSV = new ComparerCSV(donneeHtmlTest, donneeWikitableTest);
 		// on recupere les statistiques liees aux extractions realisees
 		comparerCSV.informationsExtraction();
@@ -63,8 +60,10 @@ public class ComparerCSVTest {
 	public void getHtmlNull() {
 		final ComparerCSV comparerCSVTest = new ComparerCSV(null, null);
 		assertThrows(ResultatEstNullException.class,
-				()->{
-					comparerCSVTest.getHtml();
+				new Executable() {
+					public void execute() throws Throwable {
+						comparerCSVTest.getHtml();
+					}
 				});
 	}
 	
@@ -76,8 +75,10 @@ public class ComparerCSVTest {
 	public void getWikitableNull() {
 		final ComparerCSV comparerCSVTest = new ComparerCSV(null, null);
 		assertThrows(ResultatEstNullException.class,
-				()->{
-					comparerCSVTest.getWikitable();
+				new Executable() {
+					public void execute() throws Throwable {
+						comparerCSVTest.getWikitable();
+					}
 				});
 	}
 }

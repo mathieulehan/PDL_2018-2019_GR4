@@ -1,19 +1,13 @@
-package test;
-
-import org.json.JSONException;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import classes.Donnee_Wikitable;
-import classes.Url;
-import exceptions.ExtractionInvalideException;
+package com.wikipediaMatrix;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import org.json.JSONException;
+import org.junit.*;
 
 public class Donnee_WikitableTest {
 
@@ -21,7 +15,7 @@ public class Donnee_WikitableTest {
 	 * Renvoie un message dans le cas ou l URL est fausse
 	 */
 	@Test
-	void testPageNonExistante() {
+	public void testPageNonExistante() {
 		/*ExtractWikitable testExtractPageNonExistante = new ExtractWikitable();
 		assertThrows(IOException.class,() -> {
 			testExtractPageNonExistante.extractWikiTable("en", "render", "erreurPage");
@@ -32,47 +26,11 @@ public class Donnee_WikitableTest {
 	 * Renvoie un message dans le cas ou la langue choisie est erronee
 	 */
 	@Test
-	void erreurLangue() {
+	public void erreurLangue() {
 		/*ExtractWikitable testErreurLangue = new ExtractWikitable();
 		assertThrows(UnknownHostException.class,() -> {
 			testErreurLangue.extractWikiTable("erreurLangue", "render", "Wikipedia:Unusual_articles/Places_and_infrastructure");
 	    });*/
-	}
-
-	/**
-	 * Renvoie un message si le temps d execution depasse un temps maximal
-	 * @param nbATest
-	 */
-	@Test
-	void testTempsExec(long nbATest) {
-		assertTrue("Temps d'execution de " + nbATest/1000 + " secondes", nbATest < 24000);
-	}
-
-	/**
-	 * Compare le nombre de tableaux recuperes en HTML et en Wikitext
-	 * @param nbATester
-	 * @param nbRef
-	 */
-	@Test
-	void testNbTableaux(int nbATester, int nbRef) {
-		int diff = nbRef - nbATester;
-		assertTrue("Nombre de tableaux different : " + diff, diff == 0);
-	}
-
-	/**
-	 * Renvoie le nombre de cellule comportant des differences entre recuperation HTML et Wikitext dans celles testees
-	 * @param cellulesATest
-	 * @param cellulesRef
-	 */
-	@Test
-	void testCellules(String[] cellulesATest, String[] cellulesRef) {
-		int diff = 0;
-		for (int i = 0; i < cellulesRef.length; i++) {
-			if(cellulesATest[i] != cellulesRef[i]) {
-				diff++;
-			}
-		}
-		assertTrue("Nombre de cellules differentes", diff == 0);
 	}
 
 	/**
@@ -82,7 +40,7 @@ public class Donnee_WikitableTest {
 	 * @throws MalformedURLException 
 	 */
 	@Test
-	void testCreationCSV() throws ExtractionInvalideException, IOException {
+	public void testCreationCSV() throws ExtractionInvalideException, IOException {
 		URL monUrl;
 		String contenu = "", wikitable = "";
 		try {
