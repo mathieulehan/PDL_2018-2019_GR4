@@ -89,7 +89,7 @@ public class ComparerCSV {
 		return tablesHtml;
 	}
 
-	public int getTablesWikitext() throws ResultatEstNullException {
+	public int getTablesWikitable() throws ResultatEstNullException {
 		if(tablesWikitext != (int)tablesWikitext) throw new ResultatEstNullException("tablesWikitext n'est pas de type int");
 		return tablesWikitext;
 	}

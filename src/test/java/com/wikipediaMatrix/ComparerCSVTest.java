@@ -49,7 +49,7 @@ public class ComparerCSVTest {
 		assertEquals(10, comparerCSV.getColonnesHtml());
 		assertEquals(8, comparerCSV.getColonnesWikitable());
 		assertEquals(8, comparerCSV.getTablesHtml());
-		assertEquals(7, comparerCSV.getTablesWikitext());
+		assertEquals(7, comparerCSV.getTablesWikitable());
 	}
 
 	/**
