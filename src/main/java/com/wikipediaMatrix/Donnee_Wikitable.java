@@ -6,7 +6,6 @@ import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 /**
@@ -24,14 +23,26 @@ public class Donnee_Wikitable extends Donnee{
 	private int maxLigne = 0;
 	private int maxColone = 0;
 	private int nbTableauxExtraits = 0;
+	private Url url;
 
 	public Donnee_Wikitable(){
 		this.wikitable = "";
-
 		this.tab = new String[500][200];
-
 		initTab();
 
+	}
+
+	public void setUrl(Url url) {
+		this.url = url;
+	}
+
+	@Override
+	public void run() {
+		try {
+			extraire(this.url);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getContenu() {
@@ -46,8 +57,8 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws MalformedURLException 
 	 */
 	@Override
-	public void extraire(Url url) throws  UrlInvalideException, ExtractionInvalideException, MalformedURLException, IOException {
-		start();
+	public synchronized void extraire(Url url) throws  UrlInvalideException, ExtractionInvalideException, MalformedURLException, IOException {
+		startTimer();
 		String langue = url.getLangue();
 		String titre = url.getTitre();
 
@@ -62,14 +73,14 @@ public class Donnee_Wikitable extends Donnee{
 		}
 	}
 
+	/**
+	 * Renvoie true si le json ne permet pas d'extraire le wikitext.
+	 * @param json
+	 * @return
+	 */
 	private boolean hasErrorOnPage(String json) {
 		JSONObject objetJson = new JSONObject(json);
-		if (objetJson.has("error")) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return objetJson.has("error");
 	}
 
 	/**
@@ -79,19 +90,23 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws ExtractionInvalideException 
 	 */
 	public String jsonVersWikitable(String json) throws ExtractionInvalideException {
-		try {
-			JSONObject objetJson1 = new JSONObject(json);
-			JSONObject objetJson2 = (JSONObject) objetJson1.get("parse");
-			JSONObject objetJson3 = (JSONObject) objetJson2.get("wikitext");
+		String wikitext ="";
+		if(!hasErrorOnPage(json)) {
+			try {
+				JSONObject objetJson1 = new JSONObject(json);
+				JSONObject objetJson2 = (JSONObject) objetJson1.get("parse");
+				JSONObject objetJson3 = (JSONObject) objetJson2.get("wikitext");
 
-			return objetJson3.getString("*");
-		} catch (Exception e) {
-			throw new ExtractionInvalideException("Extraction JSON vers Wikitext echouee");
+				wikitext = objetJson3.getString("*");
+			} catch (Exception e) {
+				throw new ExtractionInvalideException("Extraction JSON vers Wikitext echouee");
+			}
 		}
+		return wikitext;
 	}
 
 	/**
-	 * 
+	 * TODO : reduire la complexite de cette methode (en la coupant en plusieurs parties)
 	 * @param wikitable
 	 * @throws IOException 
 	 * @throws ExtractionInvalideException
@@ -199,6 +214,13 @@ public class Donnee_Wikitable extends Donnee{
 		}
 	}
 
+	/**
+	 * Methode gerant les rowspans et colspan d'une ligne
+	 * @param ligne
+	 * @param i
+	 * @param j
+	 * @return
+	 */
 	public int gererColspanEtRowspan(String ligne, int i, int j) {
 		if(ligne.endsWith("|")) {
 			ligne = ligne+" ";
@@ -337,6 +359,11 @@ public class Donnee_Wikitable extends Donnee{
 		return ligne;
 	}
 
+	/**
+	 * Methode supprimant plusieurs expressions inutiles pour le parsing
+	 * @param wikitable
+	 * @return
+	 */
 	public String wikitableReplace(String wikitable) {
 		wikitable = wikitable.replaceAll("scope=col", "");
 		wikitable = wikitable.replaceAll("style=\"text-align:center\"", "");
@@ -373,14 +400,25 @@ public class Donnee_Wikitable extends Donnee{
 		return true;
 	}
 
+	/**
+	 * Renvoie le nombre de colonnes ecrites pour la page courante
+	 * @return
+	 */
 	public int getColonnesEcrites() {
 		return colonnesEcrites;
 	}
 
+	/**
+	 * Renvoie le nombre de lignes ecrites pour la page courante
+	 * @return
+	 */
 	public int getLignesEcrites() {
 		return lignesEcrites;
 	}
 
+	/**
+	 * Renvoie le nombre de tableaux detectes sur la page
+	 */
 	@Override
 	public int getNbTableaux() {
 		return this.nbTableauxExtraits;

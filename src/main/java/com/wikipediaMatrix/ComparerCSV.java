@@ -55,12 +55,12 @@ public class ComparerCSV {
 	}
 
 	public long getTempsExeHtml() throws ResultatEstNullException {
-		if(tempsExeHtml != (int)tempsExeHtml) throw new ResultatEstNullException("tempsExeHtml n'est pas de type long");
+		if(tempsExeHtml != (long)tempsExeHtml) throw new ResultatEstNullException("tempsExeHtml n'est pas de type long");
 		return tempsExeHtml;
 	}
 
 	public long getTempsExeWikitable() throws ResultatEstNullException {
-		if(tempsExeWikitable != (int)tempsExeWikitable) throw new ResultatEstNullException("tempsExeWikitable n'est pas de type long");
+		if(tempsExeWikitable != (long)tempsExeWikitable) throw new ResultatEstNullException("tempsExeWikitable n'est pas de type long");
 		return tempsExeWikitable;
 	}
 

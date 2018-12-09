@@ -28,21 +28,25 @@ public class Donnee_HtmlTest {
 	// Dit a Mockito de creer les mocks definis sous l'annotation @Mock
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
+	/**
+	 * La methode pageCompoteTableau doit renvoyer true si la page contient au monis un tableau
+	 * @throws ExtractionInvalideException
+	 */
 	@Test
 	public void page_comporte_tableau() throws ExtractionInvalideException {
 		// On instancie un objet de la classe Donnee_Html
-		Donnee_Html donnee_HtmlTest  = new Donnee_Html(); 
+		Donnee_Html donnee_HtmlTest  = new Donnee_Html();
 		donnee_HtmlTest.setHtml("<html><head></head><body><table class=\"wikitable\"></table></body></html>");
 		assertTrue(donnee_HtmlTest.pageComporteTableau());
 	}
 
 	/**
-	 * TODO terminer la fonction pageComporteTableau
+	 * La methode pageComporteTableau doit renvoyer false si la page ne contient pas de tableau
 	 * @throws ExtractionInvalideException
 	 */
 	@Test
 	public void page_ne_comporte_pas_tableau() throws ExtractionInvalideException {
-		final Donnee_Html donnee_HtmlTest  = new Donnee_Html(); 
+		final Donnee_Html donnee_HtmlTest = new Donnee_Html(); 
 		donnee_HtmlTest.setHtml("");
 		assertFalse(donnee_HtmlTest.pageComporteTableau());
 	}
@@ -59,33 +63,18 @@ public class Donnee_HtmlTest {
 	}
 	
 	/**
-	 * La methode getNbTableaux doit renvoyer le bon nombre de tableaux
+	 * La methode getNbTableaux doit renvoyer le bon nombre de tableaux (wikitables et tableaux normaux)
 	 */
 	@Test
 	public void getNbTableaux() {
 		Donnee_Html donnee_Html = new Donnee_Html();
-		donnee_Html.setHtml("<table class=\"wikitable\"></table><table class=\"wikitable\"></table>");
+		donnee_Html.setHtml("<table class=\"wikitable\"></table><table class=\"wikitable\"></table><table></table>");
 		Document page = Jsoup.parseBodyFragment(donnee_Html.getHtml());
 		Elements wikitables = page.getElementsByClass("wikitable");
 		Elements tablesNonWiki = page.select("table:not([^])");
 		for (Element element : tablesNonWiki) {
 			wikitables.add(element);
 		}
-		assertTrue(wikitables.size() == 2);
+		assertTrue(wikitables.size() == 3);
 	}
-	
-	/**
-	 * Renvoie un message si le temps d execution depasse un temps maximal
-	 * @param nbATest
-	 * @return un fichier csv en sortie, dans le dossier src/ressources
-	 * @throws ExtractionInvalideException 
-	 * @throws ArticleInexistantException 
-	 * @throws ConversionInvalideException 
-	 * @throws UrlInvalideException 
-	 * @throws IOException 
-	 */
-	//	@Test
-	//	public void testTempsExec(long nbATest) {
-	//		assertTrue("Temps d'execution de " + nbATest/1000 + " secondes", nbATest < 24000);
-	//	}
 }

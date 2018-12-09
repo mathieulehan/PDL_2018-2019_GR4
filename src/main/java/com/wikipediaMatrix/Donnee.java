@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CyclicBarrier;
 
 import org.json.JSONException;
 import org.jsoup.Jsoup;
@@ -20,12 +21,18 @@ import org.jsoup.select.Elements;
  *
  */
 
-public abstract class Donnee {
+public abstract class Donnee extends Thread{
 
 	private long tempsOriginal;
 	private Map<Integer, Integer> nbLignesTableaux = new HashMap<Integer, Integer>();
 	private Map<Integer, Integer> nbColonnesTableaux = new HashMap<Integer, Integer>();;
 	private int nbTableaux = 0;
+	public static CyclicBarrier newBarrier = new CyclicBarrier(2);
+
+	public void run() {
+		// lancer une extraction
+	}
+
 	public Map<Integer, Integer> getNbLignesTableaux() {
 		return nbLignesTableaux;
 	}
@@ -42,27 +49,13 @@ public abstract class Donnee {
 	 * @throws UrlInvalideException
 	 * @throws ExtractionInvalideException
 	 */
-	public void nbLignesColonnes(Url url) throws MalformedURLException, UrlInvalideException, ExtractionInvalideException {
-		if (url.estUrlValide()) {
-			String langue = url.getLangue();
-			String titre = url.getTitre();
-			URL page = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
-			String donneeHTML = recupContenu(page);
-			Document htmlParse = Jsoup.parseBodyFragment(donneeHTML);
-			// On recupere les wikitables
-			Elements wikitables = htmlParse.getElementsByClass("wikitable");
-			// Ainsi que les tables classiques, sans attributs
-			Elements tablesNonWiki = htmlParse.select("table:not([^])");
-			for (Element element : tablesNonWiki) {
-					wikitables.add(element);
-			}
-			this.nbTableaux = wikitables.size();
-			// On parcoure l'ensemble des tableaux de la page
-			for (int i = 0 ; i < nbTableaux ; i++) {
-				int[] nbLignesColonnes = getNbLignesColonnes(wikitables.get(i));
-				nbLignesTableaux.put(i, nbLignesColonnes[0]);
-				nbColonnesTableaux.put(i, nbLignesColonnes[1]);
-			}
+	public void nbLignesColonnes(Elements wikitables) throws MalformedURLException, UrlInvalideException, ExtractionInvalideException {
+		nbTableaux = wikitables.size();
+		// On parcoure l'ensemble des tableaux de la page
+		for (int i = 0 ; i < nbTableaux ; i++) {
+			int[] nbLignesColonnes = getNbLignesColonnes(wikitables.get(i));
+			nbLignesTableaux.put(i, nbLignesColonnes[0]);
+			nbColonnesTableaux.put(i, nbLignesColonnes[1]);
 		}
 	}
 
@@ -191,7 +184,7 @@ public abstract class Donnee {
 	/**
 	 * Demarre le chronometre en back
 	 */
-	public void start(){
+	public void startTimer(){
 		this.tempsOriginal = System.currentTimeMillis();
 	}
 
