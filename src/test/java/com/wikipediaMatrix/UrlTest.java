@@ -53,7 +53,7 @@ public class UrlTest {
 	
 	@Test
 	public void verification_336_urls_valides() throws UrlInvalideException, IOException   {
-		String BASE_WIKIPEDIA_URL = "src/output/url_file.txt";
+		String BASE_WIKIPEDIA_URL = "output/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;
 	    int nurl = 0;
@@ -68,7 +68,7 @@ public class UrlTest {
 	
 	@Test
 	public void tester_connexion_336_urls() throws UrlInvalideException, IOException {
-		String BASE_WIKIPEDIA_URL = "src/output/url_file.txt";
+		String BASE_WIKIPEDIA_URL = "output/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;
 	    int articleExistant = 0, articleInexistant = 0;

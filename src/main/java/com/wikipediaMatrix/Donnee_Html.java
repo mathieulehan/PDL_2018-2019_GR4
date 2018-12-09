@@ -3,6 +3,7 @@ package com.wikipediaMatrix;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,11 +21,7 @@ public class Donnee_Html extends Donnee{
 	 * Le HTML de la page wikipedia
 	 */
 	private String donneeHTML;
-	private int maxColonnesLigne;
-	private int lignesEcrites;
-	private int colonnesEcrites;
-	private int ligneActuelle;
-	private int colonneActuelle;
+	private int nbTableauxExtraits, ligneActuelle, colonneActuelle, lignesEcrites, colonnesEcrites, maxColonnesLigne;
 	private String[][] tableau;
 
 	public Donnee_Html() {
@@ -66,12 +63,22 @@ public class Donnee_Html extends Donnee{
 	 */
 	@Override
 	public void extraire(Url url) throws UrlInvalideException, ExtractionInvalideException, ConversionInvalideException, ArticleInexistantException, IOException {
-
 		start();
+		boolean hasPage = true;
+		String langue = url.getLangue();
+		String titre = url.getTitre();
+		/* On recupere le nombre calcule de lignes et de colonnes de tous
+		les tableaux de l'url*/
+		try {
+			URL urlExtraction = new URL("https://"+langue+".wikipedia.org/wiki/"+titre+"?action=render");
+			this.setHtml(this.recupContenu(urlExtraction));
+		} catch (ExtractionInvalideException erreurExtraction) {
+			System.out.println("ERREUR : " + erreurExtraction.toString());
+			hasPage = false;
+		}
 		supprimerPointsVirgule(this.donneeHTML);
-		if(pageComporteTableau()){
-			nbLignesColonnes(url);
-			String titre = url.getTitre();
+		if(pageComporteTableau() && hasPage){
+//			nbLignesColonnes(url);
 			String titreSain = titre.replaceAll("[\\/\\?\\:\\<\\>]", "");
 			htmlVersCSV(titreSain);
 		}
@@ -91,17 +98,18 @@ public class Donnee_Html extends Donnee{
 		for (Element element : tablesNonWiki) {
 			wikitables.add(element);
 		}
-		int nbTableaux = getNbTableaux(this.donneeHTML);
-
-		for (int i = 0 ; i < nbTableaux ; i++) {
-			String outputPath = "src/output/" + titre + i + ".csv";
+		this.nbTableauxExtraits += wikitables.size();
+		
+		for (int i = 0 ; i < wikitables.size() ; i++) {
+			String outputPath = "output/HTML/" + titre + "-" + i+1 + ".csv";
 			FileOutputStream outputStream = new FileOutputStream(outputPath);
 			OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
 			// On recupere le nmobre de lignes et de colonnes du tableau en cours
-			int nbLignes = getNbLignesTableaux().get(i);
-			int nbColonnes = getNbColonnesTableaux().get(i);
+//			int nbLignes = getNbLignesTableaux().get(i);
+//			int nbColonnes = getNbColonnesTableaux().get(i);
 			// On initialise la matrice de donnees a la bonne taille
-			this.tableau = new String[nbLignes][nbColonnes];
+//			this.tableau = new String[nbLignes][nbColonnes];
+			this.tableau = new String[700][200];
 			this.ligneActuelle = 0;
 			// On remplit toutes les lignes et colonnes de la matrice
 			for (String[] ligne: tableau) {
@@ -156,7 +164,6 @@ public class Donnee_Html extends Donnee{
 				}
 				/* TODO : ici on incremente colonnesEcrites de 1 seulement, alors qu'une cellule peut creer plusieurs colonnes
 					dans le cas d'un colspan par exemple*/
-				this.colonnesEcrites++;
 				this.colonneActuelle++;
 				if(this.colonneActuelle > this.maxColonnesLigne) this.maxColonnesLigne = this.colonneActuelle;
 			}
@@ -165,7 +172,7 @@ public class Donnee_Html extends Donnee{
 			this.ligneActuelle++;
 			this.lignesEcrites++;
 		}
-		this.colonnesEcrites = this.maxColonnesLigne;
+		this.colonnesEcrites += this.maxColonnesLigne;
 	}
 
 	/**
@@ -331,14 +338,8 @@ public class Donnee_Html extends Donnee{
 	 * Renvoie le nombre de tableaux du fichier
 	 */
 	@Override
-	public int getNbTableaux(String contenuPage) {
-		Document page = Jsoup.parseBodyFragment(contenuPage);
-		Elements wikitables = page.getElementsByClass("wikitable");
-		Elements tablesNonWiki = page.select("table:not([^])");
-		for (Element element : tablesNonWiki) {
-			wikitables.add(element);
-		}
-		return wikitables.size();
+	public int getNbTableaux() {
+		return this.nbTableauxExtraits;
 	}
 
 	/**
@@ -347,7 +348,7 @@ public class Donnee_Html extends Donnee{
 	 * @return
 	 */
 	public int getColonnesEcrites() {
-		return colonnesEcrites;
+		return this.colonnesEcrites;
 	}
 
 	/**
@@ -356,6 +357,6 @@ public class Donnee_Html extends Donnee{
 	 * @return
 	 */
 	public int getLignesEcrites() {
-		return lignesEcrites;
+		return this.lignesEcrites;
 	}
 }

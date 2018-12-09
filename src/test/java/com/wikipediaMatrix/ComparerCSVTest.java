@@ -37,8 +37,8 @@ public class ComparerCSVTest {
 		Mockito.when(donneeWikitableTest.getLignesEcrites()).thenReturn(20);
 		Mockito.when(donneeHtmlTest.getColonnesEcrites()).thenReturn(10);
 		Mockito.when(donneeWikitableTest.getColonnesEcrites()).thenReturn(8);
-		Mockito.when(donneeHtmlTest.getNbTableaux("")).thenReturn(8);
-		Mockito.when(donneeWikitableTest.getNbTableaux("")).thenReturn(7);
+		Mockito.when(donneeHtmlTest.getNbTableaux()).thenReturn(8);
+		Mockito.when(donneeWikitableTest.getNbTableaux()).thenReturn(7);
 		ComparerCSV comparerCSV = new ComparerCSV(donneeHtmlTest, donneeWikitableTest);
 		// on recupere les statistiques liees aux extractions realisees
 		comparerCSV.informationsExtraction();

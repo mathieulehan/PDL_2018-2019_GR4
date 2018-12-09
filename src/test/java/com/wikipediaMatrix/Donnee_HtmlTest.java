@@ -2,12 +2,11 @@ package com.wikipediaMatrix;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.*;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -67,7 +66,12 @@ public class Donnee_HtmlTest {
 		Donnee_Html donnee_Html = new Donnee_Html();
 		donnee_Html.setHtml("<table class=\"wikitable\"></table><table class=\"wikitable\"></table>");
 		Document page = Jsoup.parseBodyFragment(donnee_Html.getHtml());
-		assertTrue(donnee_Html.getNbTableaux(donnee_Html.getHtml()) == 2);
+		Elements wikitables = page.getElementsByClass("wikitable");
+		Elements tablesNonWiki = page.select("table:not([^])");
+		for (Element element : tablesNonWiki) {
+			wikitables.add(element);
+		}
+		assertTrue(wikitables.size() == 2);
 	}
 	
 	/**

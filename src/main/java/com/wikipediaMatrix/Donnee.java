@@ -25,7 +25,7 @@ public abstract class Donnee {
 	private long tempsOriginal;
 	private Map<Integer, Integer> nbLignesTableaux = new HashMap<Integer, Integer>();
 	private Map<Integer, Integer> nbColonnesTableaux = new HashMap<Integer, Integer>();;
-
+	private int nbTableaux = 0;
 	public Map<Integer, Integer> getNbLignesTableaux() {
 		return nbLignesTableaux;
 	}
@@ -56,7 +56,7 @@ public abstract class Donnee {
 			for (Element element : tablesNonWiki) {
 					wikitables.add(element);
 			}
-			int nbTableaux = getNbTableaux(donneeHTML);
+			this.nbTableaux = wikitables.size();
 			// On parcoure l'ensemble des tableaux de la page
 			for (int i = 0 ; i < nbTableaux ; i++) {
 				int[] nbLignesColonnes = getNbLignesColonnes(wikitables.get(i));
@@ -186,7 +186,7 @@ public abstract class Donnee {
 	 */
 	abstract boolean pageComporteTableau() throws ExtractionInvalideException;
 
-	public abstract int getNbTableaux(String contenuPage);
+	public abstract int getNbTableaux();
 
 	/**
 	 * Demarre le chronometre en back

@@ -40,8 +40,8 @@ public class ComparerCSV {
 		this.lignesWikitable = wikitable.getLignesEcrites();
 		this.colonnesHtml = html.getColonnesEcrites();
 		this.colonnesWikitable = wikitable.getColonnesEcrites();
-		this.tablesHtml = html.getNbTableaux(this.html.getHtml());
-		this.tablesWikitext = wikitable.getNbTableaux(this.wikitable.getContenu());
+		this.tablesHtml = html.getNbTableaux();
+		this.tablesWikitext = wikitable.getNbTableaux();
 	}
 	
 	public Donnee_Html getHtml() throws ResultatEstNullException {

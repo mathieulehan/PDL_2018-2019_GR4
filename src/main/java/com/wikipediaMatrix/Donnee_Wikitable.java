@@ -6,8 +6,6 @@ import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.sound.midi.Synthesizer;
-
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -25,11 +23,12 @@ public class Donnee_Wikitable extends Donnee{
 	private String[][] tab;
 	private int maxLigne = 0;
 	private int maxColone = 0;
+	private int nbTableauxExtraits = 0;
 
 	public Donnee_Wikitable(){
 		this.wikitable = "";
 
-		this.tab = new String[500][500];
+		this.tab = new String[500][200];
 
 		initTab();
 
@@ -48,23 +47,18 @@ public class Donnee_Wikitable extends Donnee{
 	 */
 	@Override
 	public void extraire(Url url) throws  UrlInvalideException, ExtractionInvalideException, MalformedURLException, IOException {
-		if(url.estUrlValide()) {
-			String langue = url.getLangue();
-			String titre = url.getTitre();
+		start();
+		String langue = url.getLangue();
+		String titre = url.getTitre();
 
-			URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
-			String json = recupContenu(page);
-			if(!hasErrorOnPage(json)) {
-				if (titre.equals("Comparison_of_instant_messaging_clients")) {
-					System.out.println("coin");
-				}
-				System.out.println("Extraction de la page " + titre);
-				wikitable = jsonVersWikitable(json);
-				wikitableEnTeteVersCSV(titre,wikitable);
-			}
-			else {
-				System.out.println("La page " + titre + "ne permet pas d'extraction en json");
-			}
+		URL page = new URL("https://"+langue+".wikipedia.org/w/api.php?action=parse&page="+titre+"&prop=wikitext&format=json");
+		String json = recupContenu(page);
+		if(!hasErrorOnPage(json)) {
+			wikitable = jsonVersWikitable(json);
+			wikitableEnTeteVersCSV(titre,wikitable);
+		}
+		else {
+			System.out.println("La page " + titre + "ne permet pas d'extraction en json");
 		}
 	}
 
@@ -109,15 +103,14 @@ public class Donnee_Wikitable extends Donnee{
 		wikitable = wikitableReplace(wikitable);
 
 		String[] lignes = wikitable.split("\n");
-
 		for (String ligne : lignes) {
 			if(ligne.startsWith(" ") || ligne.startsWith("	")) {
 				ligne = supprimerEspaceDebut(ligne);
 			}
-			//System.out.println(ligne);
 			if(ligne.startsWith("{|")) {
 				i=0;
 				nbtab++;
+				this.nbTableauxExtraits++;
 				first = true;
 				tableau = true;
 			}
@@ -305,13 +298,15 @@ public class Donnee_Wikitable extends Donnee{
 	 */
 	public void ecrireCsv(String titre, int nbtab) throws IOException{
 		boolean drap = false;
-		String outputPath = "src/output/" + titre + nbtab + ".csv";
+		String outputPath = "output/wikitext/" + titre + nbtab + ".csv";
 		FileOutputStream outputStream = new FileOutputStream(outputPath);
-		OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
 
+
+		OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+		this.lignesEcrites = maxLigne;
+		this.colonnesEcrites += maxColone;
 		for(int k = 0; k < maxLigne; k++) {
 			for(int l = 0; l < maxColone; l++) {
-				//System.out.println(tab[k][l].concat(";"));
 				if(tab[k][l].startsWith("!")) {
 					tab[k][l]=tab[k][l].substring(1, tab[k][l].length());
 				}
@@ -387,7 +382,7 @@ public class Donnee_Wikitable extends Donnee{
 	}
 
 	@Override
-	public int getNbTableaux(String contenu) {
-		return StringUtils.countMatches("{|", contenu);
+	public int getNbTableaux() {
+		return this.nbTableauxExtraits;
 	}
 }
