@@ -9,8 +9,6 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-import org.junit.Test;
-
 public class WikiExtractMain {
 
 	private static int nbTablesHtml;

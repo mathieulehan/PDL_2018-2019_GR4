@@ -1,7 +1,5 @@
 package com.wikipediaMatrix;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

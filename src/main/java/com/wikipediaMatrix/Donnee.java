@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
 
 import org.json.JSONException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -29,6 +27,7 @@ public abstract class Donnee extends Thread{
 	private int nbTableaux = 0;
 	public static CyclicBarrier newBarrier = new CyclicBarrier(2);
 
+	@Override
 	public void run() {
 		// lancer une extraction
 	}

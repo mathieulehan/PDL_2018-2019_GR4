@@ -55,42 +55,42 @@ public class ComparerCSV {
 	}
 
 	public long getTempsExeHtml() throws ResultatEstNullException {
-		if(tempsExeHtml != (long)tempsExeHtml) throw new ResultatEstNullException("tempsExeHtml n'est pas de type long");
+		if(tempsExeHtml != tempsExeHtml) throw new ResultatEstNullException("tempsExeHtml n'est pas de type long");
 		return tempsExeHtml;
 	}
 
 	public long getTempsExeWikitable() throws ResultatEstNullException {
-		if(tempsExeWikitable != (long)tempsExeWikitable) throw new ResultatEstNullException("tempsExeWikitable n'est pas de type long");
+		if(tempsExeWikitable != tempsExeWikitable) throw new ResultatEstNullException("tempsExeWikitable n'est pas de type long");
 		return tempsExeWikitable;
 	}
 
 	public int getLignesHtml() throws ResultatEstNullException {
-		if(lignesHtml != (int)lignesHtml) throw new ResultatEstNullException("lignesHtml n'est pas de type int");
+		if(lignesHtml != lignesHtml) throw new ResultatEstNullException("lignesHtml n'est pas de type int");
 		return lignesHtml;
 	}
 
 	public int getLignesWikitable() throws ResultatEstNullException {
-		if(lignesWikitable != (int)lignesWikitable) throw new ResultatEstNullException("lignesWikitable n'est pas de type int");
+		if(lignesWikitable != lignesWikitable) throw new ResultatEstNullException("lignesWikitable n'est pas de type int");
 		return lignesWikitable;
 	}
 
 	public int getColonnesHtml() throws ResultatEstNullException {
-		if(colonnesHtml != (int)colonnesHtml) throw new ResultatEstNullException("colonnesHtml n'est pas de type int");
+		if(colonnesHtml != colonnesHtml) throw new ResultatEstNullException("colonnesHtml n'est pas de type int");
 		return colonnesHtml;
 	}
 
 	public int getColonnesWikitable() throws ResultatEstNullException {
-		if(colonnesWikitable != (int)colonnesWikitable) throw new ResultatEstNullException("colonnesWikitable n'est pas de type int");
+		if(colonnesWikitable != colonnesWikitable) throw new ResultatEstNullException("colonnesWikitable n'est pas de type int");
 		return colonnesWikitable;
 	}
 
 	public int getTablesHtml() throws ResultatEstNullException {
-		if(tablesHtml != (int)tablesHtml) throw new ResultatEstNullException("tablesHtml n'est pas de type int");
+		if(tablesHtml != tablesHtml) throw new ResultatEstNullException("tablesHtml n'est pas de type int");
 		return tablesHtml;
 	}
 
 	public int getTablesWikitable() throws ResultatEstNullException {
-		if(tablesWikitext != (int)tablesWikitext) throw new ResultatEstNullException("tablesWikitext n'est pas de type int");
+		if(tablesWikitext != tablesWikitext) throw new ResultatEstNullException("tablesWikitext n'est pas de type int");
 		return tablesWikitext;
 	}
 }
