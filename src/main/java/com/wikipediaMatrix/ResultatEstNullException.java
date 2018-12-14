@@ -1,5 +1,10 @@
 package main.java.com.wikipediaMatrix;
 
+/**
+ * 
+ * @author Groupe 4
+ *
+ */
 public class ResultatEstNullException extends Exception{
 
 	String message;

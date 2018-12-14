@@ -7,7 +7,7 @@ import java.net.URL;
 /**
  * Classe permettant de recuperer les informations d'une page via son url
  * Validation de l'url requise
- * @author Charlotte
+ * @author Groupe 4
  *
  */
 public class Url {

@@ -17,6 +17,11 @@ import main.java.com.wikipediaMatrix.ResultatEstNullException;
 import main.java.com.wikipediaMatrix.Url;
 import main.java.com.wikipediaMatrix.UrlInvalideException;
 
+/**
+ * 
+ * @author Groupe 4
+ *
+ */
 public class WikiExtractMainTest {	
 
 	int nbTablesHtml, nbLignesHtml, nbColonnesHtml, tempsExeHtml, nbTablesWikitext, nbLignesWikitext, nbColonnesWikitext, tempsExeWikitext = 0;

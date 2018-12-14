@@ -9,6 +9,11 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+/**
+ * 
+ * @author Groupe 4
+ *
+ */
 public class WikiExtractMain {
 
 	private static int nbTablesHtml;

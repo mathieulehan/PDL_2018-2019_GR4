@@ -15,7 +15,7 @@ import main.java.com.wikipediaMatrix.ResultatEstNullException;
 
 /**
  * Classe de tests unitaires JUnit, utilisant Mockito pour tester les methodes de la classe ComparerCSV 
- * @author mathi
+ * @author Groupe 4
  *
  */
 public class ComparerCSVTest {

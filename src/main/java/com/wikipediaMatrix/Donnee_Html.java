@@ -12,7 +12,7 @@ import org.jsoup.select.Elements;
 
 /**
  * Classe permettant de recuperer et convertir les tableaux d'une page wikipedia en fichiers CSV
- * @author mathi & thomas
+ * @author Groupe 4
  *
  */
 

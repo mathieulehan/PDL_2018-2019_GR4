@@ -16,47 +16,87 @@ import main.java.com.wikipediaMatrix.ArticleInexistantException;
 import main.java.com.wikipediaMatrix.Url;
 import main.java.com.wikipediaMatrix.UrlInvalideException;
 
+/**
+ * 
+ * @author Groupe 4
+ *
+ */
 public class UrlTest {
 
+	/**
+	 * Renvoie une exception si la langue n'est pas geree par notre application
+	 * @throws UrlInvalideException
+	 * @throws MalformedURLException
+	 */
 	@Test(expected = UrlInvalideException.class)
-	public void detection_langues_non_geree() throws UrlInvalideException, MalformedURLException {
+	public void detectionLanguesNonGeree() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://fy.wikipedia.org/wiki/Espagne"));
 		url.estUrlValide();
 	}
 	
+	/**
+	 * Verifie qu'il s'agit d'une URL vers une page wikipedia, renvoie une exception sinon
+	 * @throws UrlInvalideException
+	 * @throws MalformedURLException
+	 */
 	@Test(expected = UrlInvalideException.class)
-	public void page_non_wikipedia() throws UrlInvalideException, MalformedURLException {
+	public void pageNonWikipedia() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://www.google.com"));
 		url.estUrlValide();
 	}
 
+	/**
+	 * La methode renvoie false si le titre est invalide
+	 * @throws UrlInvalideException
+	 * @throws MalformedURLException
+	 */
 	@Test
-	public void titre_inexistant() throws UrlInvalideException, MalformedURLException {
+	public void titreInexistant() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://fr.wikipedia.org/wiki/"));
 		assertFalse(url.estUrlValide());
 	}
 
+	/**
+	 * Verifie le titre recupere via l'URL
+	 * @throws MalformedURLException
+	 * @throws UrlInvalideException
+	 */
 	@Test
-	public void titre_url_egal_espagne() throws MalformedURLException, UrlInvalideException  {
+	public void titreUrlEgalEspagne() throws MalformedURLException, UrlInvalideException  {
 		Url url = new Url(new URL("https://fr.wikipedia.org/wiki/Espagne"));
 		url.estUrlValide();
 		assertTrue(url.getTitre().equals("Espagne"));
 	}
 
+	/**
+	 * La methode doit renvoyer l'exception specifiee en cas de langue inexistante
+	 * @throws UrlInvalideException
+	 * @throws MalformedURLException
+	 */
 	@Test(expected = UrlInvalideException.class)
-	public void detection_langues_inexistante() throws UrlInvalideException, MalformedURLException {
+	public void detectionLlanguesIinexistante() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://.wikipedia.org/wiki/Espagne"));
 		url.estUrlValide();
 	}
 	
+	/**
+	 * La methode doit renvoyer false si la langue est invalide
+	 * @throws UrlInvalideException
+	 * @throws MalformedURLException
+	 */
 	@Test
-	public void titre_langue_incomplet() throws UrlInvalideException, MalformedURLException {
+	public void titreLangueIncomplet() throws UrlInvalideException, MalformedURLException {
 		Url url = new Url(new URL("https://.wikipedia.org/wiki/"));
 		assertFalse(url.estUrlValide());
 	}
 	
+	/**
+	 * Verfie la validite des 336 URLs fournies
+	 * @throws UrlInvalideException
+	 * @throws IOException
+	 */
 	@Test
-	public void verification_336_urls_valides() throws UrlInvalideException, IOException   {
+	public void verification336UrlsValides() throws UrlInvalideException, IOException   {
 		String BASE_WIKIPEDIA_URL = "output/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;
@@ -70,8 +110,13 @@ public class UrlTest {
 	    assertEquals(nurl, 336);
 	}
 	
+	/**
+	 * Methode qui test la connexion pour les 336 URLs fournies
+	 * @throws UrlInvalideException
+	 * @throws IOException
+	 */
 	@Test
-	public void tester_connexion_336_urls() throws UrlInvalideException, IOException {
+	public void testerConnexion336Urls() throws UrlInvalideException, IOException {
 		String BASE_WIKIPEDIA_URL = "output/url_file.txt";
 		BufferedReader br = new BufferedReader(new FileReader(BASE_WIKIPEDIA_URL));
 	    String url;

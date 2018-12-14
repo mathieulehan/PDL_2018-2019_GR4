@@ -9,8 +9,8 @@ import java.net.URL;
 import org.json.JSONObject;
 
 /**
- * Classe permettant de recuperer et convertir des tables HTML en CSV
- * @author mathi & thomas
+ * Classe permettant de recuperer et convertir des Wikitable en CSV
+ * @author Groupe 4
  *
  */
 
@@ -114,7 +114,7 @@ public class Donnee_Wikitable extends Donnee{
 	}
 
 	/**
-	 * TODO : reduire la complexite de cette methode (en la coupant en plusieurs parties)
+	 * Amelioration possible : reduire la complexite de cette methode (en la coupant en plusieurs parties)
 	 * @param wikitable
 	 * @throws IOException 
 	 * @throws ExtractionInvalideException

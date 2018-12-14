@@ -19,9 +19,14 @@ import main.java.com.wikipediaMatrix.Donnee_Html;
 import main.java.com.wikipediaMatrix.ExtractionInvalideException;
 import main.java.com.wikipediaMatrix.Url;
 
+/**
+ * 
+ * @author Groupe 4
+ *
+ */
 public class Donnee_HtmlTest {
 
-	// On "mock" les classes qui vont être utilisées dans le test
+	// On "mock" les classes qui vont être utilisees dans le test
 	@Mock
 	Donnee donneeTest;
 	Donnee_Html donnee_HtmlTest;
@@ -31,11 +36,11 @@ public class Donnee_HtmlTest {
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
 	/**
-	 * La methode pageCompoteTableau doit renvoyer true si la page contient au monis un tableau
+	 * La methode pageCompoteTableau doit renvoyer true si la page contient au moins un tableau
 	 * @throws ExtractionInvalideException
 	 */
 	@Test
-	public void page_comporte_tableau() throws ExtractionInvalideException {
+	public void pageComporteTableau() throws ExtractionInvalideException {
 		// On instancie un objet de la classe Donnee_Html
 		Donnee_Html donnee_HtmlTest  = new Donnee_Html();
 		donnee_HtmlTest.setHtml("<html><head></head><body><table class=\"wikitable\"></table></body></html>");
@@ -47,7 +52,7 @@ public class Donnee_HtmlTest {
 	 * @throws ExtractionInvalideException
 	 */
 	@Test
-	public void page_ne_comporte_pas_tableau() throws ExtractionInvalideException {
+	public void pageNeComportePasTableau() throws ExtractionInvalideException {
 		final Donnee_Html donnee_HtmlTest = new Donnee_Html(); 
 		donnee_HtmlTest.setHtml("");
 		assertFalse(donnee_HtmlTest.pageComporteTableau());

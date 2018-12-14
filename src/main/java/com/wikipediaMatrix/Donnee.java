@@ -15,7 +15,7 @@ import org.jsoup.select.Elements;
 
 /**
  * Classe abstraite pour recuperer les donnees
- * @author thomas
+ * @author Groupe 4
  *
  */
 

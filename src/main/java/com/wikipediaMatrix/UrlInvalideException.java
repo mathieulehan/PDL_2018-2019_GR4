@@ -7,7 +7,7 @@ package main.java.com.wikipediaMatrix;
  * - Connexion via l'URL echouee
  * - Langue non geree
  * 
- * @author Charlotte
+ * @author Groupe 4
  *
  */
 public class UrlInvalideException extends Exception {

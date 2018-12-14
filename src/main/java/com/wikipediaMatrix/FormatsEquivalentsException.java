@@ -2,10 +2,10 @@ package main.java.com.wikipediaMatrix;
 
 /**
  * 
- * Classe creant une Exception lorsque la comparaison des 2 extraction (format HTML et Wikitext) :
+ * Classe creant une Exception lors de la comparaison des 2 extractions (format HTML et Wikitext) :
  * - Nombre de lignes equivalentes
  * - Nombre de colonnes equivalentes
- * @author Charlotte
+ * @author Groupe 4
  *
  */
 public class FormatsEquivalentsException extends Exception{

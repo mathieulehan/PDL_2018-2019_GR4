@@ -3,7 +3,7 @@ package main.java.com.wikipediaMatrix;
 /**
  * Classe permettant de recuperer dse statistiques sur les deux methodes de recuperation de table wikipedia,
  * afin de determiner laquelle est la meilleure.
- * @author mathi & thomas
+ * @author Groupe 4
  *
  */
 public class ComparerCSV {
