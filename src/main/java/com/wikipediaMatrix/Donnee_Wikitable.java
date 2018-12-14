@@ -1,4 +1,4 @@
-package com.wikipediaMatrix;
+package main.java.com.wikipediaMatrix;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,6 +35,14 @@ public class Donnee_Wikitable extends Donnee{
 	public void setUrl(Url url) {
 		this.url = url;
 	}
+	
+	public void setWikitable(String wikitable) {
+		this.wikitable = wikitable;
+	}
+	
+	public String getWikitable() {
+		return this.wikitable;
+	}
 
 	@Override
 	public void run() {
@@ -66,7 +74,7 @@ public class Donnee_Wikitable extends Donnee{
 		String json = recupContenu(page);
 		if(!hasErrorOnPage(json)) {
 			wikitable = jsonVersWikitable(json);
-			wikitableEnTeteVersCSV(titre,wikitable);
+			wikitableVersCSV(titre,wikitable);
 		}
 		else {
 			System.out.println("La page " + titre + "ne permet pas d'extraction en json");
@@ -111,7 +119,7 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws IOException 
 	 * @throws ExtractionInvalideException
 	 */
-	public void wikitableEnTeteVersCSV(String titre, String wikitable) throws IOException {
+	public void wikitableVersCSV(String titre, String wikitable) throws IOException {
 		int i = 0,j = 0, nbtab = 0;
 		boolean first = false, tableau = false, dansCell = false, drap = false;
 
@@ -352,7 +360,7 @@ public class Donnee_Wikitable extends Donnee{
 	 * @param ligne
 	 * @return
 	 */
-	private String supprimerEspaceDebut(String ligne) {
+	public String supprimerEspaceDebut(String ligne) {
 		while(ligne.startsWith(" ") || ligne.startsWith("	")) {
 			ligne = ligne.substring(1,ligne.length());
 		}
@@ -382,7 +390,7 @@ public class Donnee_Wikitable extends Donnee{
 		wikitable = wikitable.replaceAll("</center>", "");
 		wikitable = wikitable.replaceAll("<center>", "");
 		wikitable = wikitable.replaceAll("\\|-/", "\\| -/");
-
+		
 		return wikitable;
 	}
 
@@ -393,9 +401,10 @@ public class Donnee_Wikitable extends Donnee{
 	 * @throws ExtractionInvalideException 
 	 */
 	@Override
-	boolean pageComporteTableau() throws ExtractionInvalideException {
+	public boolean pageComporteTableau() throws ExtractionInvalideException {
 		if(!wikitable.contains("{|")){
-			throw new ExtractionInvalideException("Aucun tableau present dans la page");
+			System.out.println(new ExtractionInvalideException("Aucun tableau present dans la page").getMessage());
+			return false;
 		}
 		return true;
 	}

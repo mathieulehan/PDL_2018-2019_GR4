@@ -1,4 +1,4 @@
-package com.wikipediaMatrix;
+package main.java.com.wikipediaMatrix;
 
 import java.io.BufferedReader;
 import java.io.IOException;

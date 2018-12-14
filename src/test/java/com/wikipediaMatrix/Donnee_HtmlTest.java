@@ -1,21 +1,23 @@
-package com.wikipediaMatrix;
+package test.java.com.wikipediaMatrix;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.junit.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import com.wikipediaMatrix.Donnee;
-import com.wikipediaMatrix.Donnee_Html;
-import com.wikipediaMatrix.ExtractionInvalideException;
-import com.wikipediaMatrix.Url;
+import main.java.com.wikipediaMatrix.Donnee;
+import main.java.com.wikipediaMatrix.Donnee_Html;
+import main.java.com.wikipediaMatrix.ExtractionInvalideException;
+import main.java.com.wikipediaMatrix.Url;
 
 public class Donnee_HtmlTest {
 

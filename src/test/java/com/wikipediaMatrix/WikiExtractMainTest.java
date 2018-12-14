@@ -1,10 +1,21 @@
-package com.wikipediaMatrix;
+package test.java.com.wikipediaMatrix;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import org.junit.*;
+
+import org.junit.Test;
+
+import main.java.com.wikipediaMatrix.ArticleInexistantException;
+import main.java.com.wikipediaMatrix.ComparerCSV;
+import main.java.com.wikipediaMatrix.ConversionInvalideException;
+import main.java.com.wikipediaMatrix.Donnee_Html;
+import main.java.com.wikipediaMatrix.Donnee_Wikitable;
+import main.java.com.wikipediaMatrix.ExtractionInvalideException;
+import main.java.com.wikipediaMatrix.ResultatEstNullException;
+import main.java.com.wikipediaMatrix.Url;
+import main.java.com.wikipediaMatrix.UrlInvalideException;
 
 public class WikiExtractMainTest {	
 

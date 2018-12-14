@@ -1,4 +1,4 @@
-package com.wikipediaMatrix;
+package test.java.com.wikipediaMatrix;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,7 +10,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.*;
+import org.junit.Test;
+
+import main.java.com.wikipediaMatrix.ArticleInexistantException;
+import main.java.com.wikipediaMatrix.Url;
+import main.java.com.wikipediaMatrix.UrlInvalideException;
 
 public class UrlTest {
 

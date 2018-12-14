@@ -1,4 +1,4 @@
-package com.wikipediaMatrix;
+package main.java.com.wikipediaMatrix;
 
 public class ResultatEstNullException extends Exception{
 

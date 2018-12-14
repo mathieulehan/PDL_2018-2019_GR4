@@ -1,11 +1,17 @@
-package com.wikipediaMatrix;
+package test.java.com.wikipediaMatrix;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.*;
+import org.junit.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
+
+import main.java.com.wikipediaMatrix.ComparerCSV;
+import main.java.com.wikipediaMatrix.Donnee;
+import main.java.com.wikipediaMatrix.Donnee_Html;
+import main.java.com.wikipediaMatrix.Donnee_Wikitable;
+import main.java.com.wikipediaMatrix.ResultatEstNullException;
 
 /**
  * Classe de tests unitaires JUnit, utilisant Mockito pour tester les methodes de la classe ComparerCSV 

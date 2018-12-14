@@ -1,4 +1,4 @@
-package com.wikipediaMatrix;
+package main.java.com.wikipediaMatrix;
 
 /**
  * Classe permettant de recuperer dse statistiques sur les deux methodes de recuperation de table wikipedia,

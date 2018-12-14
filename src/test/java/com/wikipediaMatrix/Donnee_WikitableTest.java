@@ -1,35 +1,25 @@
-package com.wikipediaMatrix;
+package test.java.com.wikipediaMatrix;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import org.json.JSONException;
-import org.junit.*;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import main.java.com.wikipediaMatrix.Donnee_Html;
+import main.java.com.wikipediaMatrix.Donnee_Wikitable;
+import main.java.com.wikipediaMatrix.ExtractionInvalideException;
+import main.java.com.wikipediaMatrix.Url;
 
 public class Donnee_WikitableTest {
-
-	/**
-	 * Renvoie un message dans le cas ou l URL est fausse
-	 */
-	@Test
-	public void testPageNonExistante() {
-		/*ExtractWikitable testExtractPageNonExistante = new ExtractWikitable();
-		assertThrows(IOException.class,() -> {
-			testExtractPageNonExistante.extractWikiTable("en", "render", "erreurPage");
-	    });*/
-	}
-
-	/**
-	 * Renvoie un message dans le cas ou la langue choisie est erronee
-	 */
-	@Test
-	public void erreurLangue() {
-		/*ExtractWikitable testErreurLangue = new ExtractWikitable();
-		assertThrows(UnknownHostException.class,() -> {
-			testErreurLangue.extractWikiTable("erreurLangue", "render", "Wikipedia:Unusual_articles/Places_and_infrastructure");
-	    });*/
-	}
 
 	/**
 	 * Test tout a la wanaghen, en gros c est un main dans les tests
@@ -54,7 +44,7 @@ public class Donnee_WikitableTest {
 			}
 			try {
 				wikitable = test.jsonVersWikitable(contenu);			
-				test.wikitableEnTeteVersCSV("titre",wikitable);
+				test.wikitableVersCSV("Comparison_between_Esperanto_and_Ido",wikitable);
 
 			}catch(ExtractionInvalideException e) {
 				e.printStackTrace();
@@ -67,19 +57,47 @@ public class Donnee_WikitableTest {
 	}
 
 	/**
-	 * Si la page ne comporte pas de tableau, 
-	 * on genere une {@link ExtractionInvalideException}
-	 * On assert l'exception avec JUnit 5 comme ci-dessous
-	 * (on utilise une lambda expression de Java 8)
+	 * La methode pageCompoteTableau doit renvoyer true si la page contient au monis un tableau
+	 * @throws ExtractionInvalideException
 	 */
-//	@Test
-//	void pasDeTableau() {
-//		Donnee_Wikitable donneeWikitableTest = Mockito.mock(Donnee_Wikitable.class);
-//		Mockito.when(donneeWikitableTest.wikitable.contains())
-//	    assertThrows(NullPointerException.class,
-//	            ()->{
-//	            // on met ici ce qui doit renvoyer une exception
-//	            donneeWikitableTest.pageComporteTableau();
-//	            });
-//	}
+	@Test
+	public void page_comporte_tableau() throws ExtractionInvalideException {
+		// On instancie un objet de la classe Donnee_Html
+		Donnee_Wikitable donnee_WikitextTest  = new Donnee_Wikitable();
+		donnee_WikitextTest.setWikitable("{| class=\"wikitable\" |}");
+		assertTrue(donnee_WikitextTest.pageComporteTableau());
+	}
+	
+	/**
+	 * La methode pageComporteTableau doit renvoyer false si la page ne contient pas de tableau
+	 * @throws ExtractionInvalideException
+	 */
+	@Test
+	public void page_ne_comporte_pas_tableau() throws ExtractionInvalideException {
+		Donnee_Wikitable donnee_WikitextTest = new Donnee_Wikitable(); 
+		donnee_WikitextTest.setWikitable("");
+		assertFalse(donnee_WikitextTest.pageComporteTableau());
+	}
+	
+	/**
+	 * La methode supprDonneesInutuiles doit supprimer toutes les donnees qui ne sont pas utiles pour la suite
+	 * @throws ExtractionInvalideException
+	 */
+	@Test
+	public void supprDonneesInutuiles() throws ExtractionInvalideException {
+		Donnee_Wikitable donnee_WikitextTest = new Donnee_Wikitable();
+		String test = donnee_WikitextTest.wikitableReplace("scope=col;style=\"text-align:center\"align=\"center\"|&nbsp;<br /></center>|-/");
+		assertEquals(test, ", | -/");
+	}
+	
+	/**
+	 * La methode supprEspacesInutuiles doit supprimer tous les espaces qui ne sont pas utiles pour la suite
+	 * @throws ExtractionInvalideException
+	 */
+	@Test
+	public void supprEspacesInutuiles() throws ExtractionInvalideException {
+		Donnee_Wikitable donnee_WikitextTest = new Donnee_Wikitable();
+		String test = donnee_WikitextTest.supprimerEspaceDebut("   wikitexte");
+		assertEquals(test, "wikitexte");
+	}
 }
