@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 /**
- * 
+ * Classe permettant a l'utilisateur de faire une extraction a la carte
  * @author Groupe 4
  *
  */
